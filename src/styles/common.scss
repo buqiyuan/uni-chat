@@ -1,0 +1,15 @@
+@import "vars";
+@import "func";
+
+uni-app, .uni-app--maxwidth {
+  width: $max-width;
+  margin: 0 auto;
+  transform: translate(0);
+}
+img {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+.iconfont {
+  font-size: rpx(32);
+}

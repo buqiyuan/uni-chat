@@ -1,0 +1,34 @@
+{
+  //  "easycom": {
+  //    "autoscan": true,
+  //    "custom": {
+  //      // uni-ui 规则如下配置
+  //      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+  //    }
+  //  },
+  "pages": [
+    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    {
+      "path": "pages/index/index",
+      "aliasPath":"/",
+      "name":"index"
+    },
+    {
+      "path": "pages/chat/chat",
+      "aliasPath":"/chat/:id",
+      "name":"chat"
+    }
+  ],
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8",
+    "app-plus": {
+      "bounce": "none",
+      "scrollIndicator": "none", // 不显示滚动条
+      "softinputMode": "adjustResize"
+    }
+  }
+}

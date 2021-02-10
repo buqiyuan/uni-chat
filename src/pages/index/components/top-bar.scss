@@ -1,0 +1,49 @@
+@import "~@/styles/func.scss";
+
+view ::v-deep {
+  /* 用户头像信息等 */
+  .user-info {
+    display: flex;
+    align-items: center;
+  }
+  .avatar {
+    width: rpx(60);
+    height: rpx(60);
+    margin-right: rpx(16);
+    border-radius: rpx(60);
+  }
+  .desc {
+    display: flex;
+    flex-direction: column;
+  }
+  .nickname {
+    font-size: rpx(34);
+  }
+  .network-status {
+    font-size: rpx(18);
+  }
+  .status {
+    display: inline-block;
+    width: rpx(14);
+    height: rpx(14);
+    margin-right: rpx(10);
+    background: linear-gradient(to bottom, #37f190 20%, #0ddc84);
+    border-radius: rpx(14);
+  }
+  /* 标题 */
+  .top-bar-title {
+    font-size: rpx(36);
+  }
+
+  /* 工具图标样式 */
+  .tools {
+    display: flex;
+    align-items: center;
+
+    .iconfont {
+      margin-left: rpx(44);
+      font-size: rpx(40);
+      @include click-text-active();
+    }
+  }
+}
