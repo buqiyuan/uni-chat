@@ -1,6 +1,18 @@
 @import "vars";
 @import "func";
-
+body {
+  overflow: hidden;
+}
+view,
+text {
+  box-sizing: border-box;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+image {
+  will-change: transform;
+}
 uni-app, .uni-app--maxwidth {
   width: $max-width;
   margin: 0 auto;

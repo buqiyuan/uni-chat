@@ -8,7 +8,7 @@
         </view>
       </view>
       <view v-if="isMounted" class="panel" :class="{ opened: isOpenEmojiPanel }">
-        <Voice v-show="currentToolName === toolIcons[0]" />
+        <Speech v-show="currentToolName === toolIcons[0]" />
         <Photo v-show="currentToolName === toolIcons[1]" />
         <Photograph v-show="currentToolName === toolIcons[2]" />
         <RedPacket v-show="currentToolName === toolIcons[3]" />
@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, onMounted } from '@vue/composition-api'
-import Voice from '@/components/chat-input-tools/components/Voice.vue'
+import Speech from '@/components/chat-input-tools/components/speech/index.vue'
 import Photo from '@/components/chat-input-tools/components/Photo.vue'
 import Photograph from '@/components/chat-input-tools/components/Photograph.vue'
 import RedPacket from '@/components/chat-input-tools/components/RedPacket.vue'
@@ -32,7 +32,7 @@ const toolIcons = ['icon-yuyin', 'icon-tupian', 'icon-Camera1', 'icon-hongbao', 
 
 export default defineComponent({
   name: 'ChatInputTools',
-  components: { Other, Emoji, RedPacket, Photograph, Photo, Voice },
+  components: { Other, Emoji, RedPacket, Photograph, Photo, Speech },
   setup() {
     const state = reactive({
       currentToolName: '',
@@ -89,7 +89,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: rpx(16);
+    padding: rpx(16) rpx(28);
     .iconfont {
       font-size: rpx(46);
       color: #989eb4;

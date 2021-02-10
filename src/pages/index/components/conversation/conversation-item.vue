@@ -32,7 +32,7 @@ interface IProps {
 }
 
 export default defineComponent({
-  name: 'MessageItem',
+  name: 'ConversationItem',
   props: {
     messageItem: {
       type: Object as PropType<MessageItem>,

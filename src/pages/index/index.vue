@@ -2,7 +2,7 @@
   <drawer-layout ref="drawerLayoutRef" v-model="isOpen" :style="{ '--body-height': bodyHeight }">
     <template #right>
       <!--      <component :is="compName" />-->
-      <message v-show="compName === 'message'" @open-drawer="isOpen = true" />
+      <Conversation v-show="compName === 'conversation'" @open-drawer="isOpen = true" />
       <contact v-show="compName === 'contact'" />
       <look-point v-show="compName === 'look-point'" />
       <dynamic v-show="compName === 'dynamic'" />
@@ -15,13 +15,13 @@
 import { computed, defineComponent, reactive, ref, toRefs } from '@vue/composition-api'
 import DrawerLayout from '@/components/drawer-layout/index.vue'
 import TabBar from './tab-bar.vue'
-import Message from './components/message/index.vue'
+import Conversation from './components/conversation/index.vue'
 import Contact from './components/contact/index.vue'
 import LookPoint from './components/look-point/index.vue'
 import Dynamic from './components/dynamic/index.vue'
 
 export default defineComponent({
-  components: { DrawerLayout, TabBar, Message, Contact, LookPoint, Dynamic },
+  components: { DrawerLayout, TabBar, Conversation, Contact, LookPoint, Dynamic },
   setup(_, { root }) {
     const drawerLayoutRef = ref<any>(null)
 
@@ -29,7 +29,7 @@ export default defineComponent({
 
     const state = reactive({
       isOpen: false,
-      compName: 'message',
+      compName: 'conversation',
     })
 
     // tab栏切换时触发

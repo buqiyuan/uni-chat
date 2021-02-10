@@ -14,7 +14,7 @@ export const app = {
       // 这里的 `state` 对象是模块的局部状态
       state.tabBarHeight = height
     },
-    setTopBarheight(state: AppIState, height: number): void {
+    setTopBarHeight(state: AppIState, height: number): void {
       // 这里的 `state` 对象是模块的局部状态
       state.topBarHeight = height
     },

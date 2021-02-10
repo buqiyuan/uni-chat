@@ -15,7 +15,7 @@ export interface IClientRect {
  * @param selector {string} 元素选择器
  * @description 获取元素宽高等
  */
-export const useClientRect = (selector: string): Ref => {
+export const useClientRect = async (selector: string): Promise<Ref> => {
   const clientRect = ref<IClientRect>()
 
   const getTabBarHeight = () => {
@@ -28,12 +28,9 @@ export const useClientRect = (selector: string): Ref => {
       .exec()
   }
 
-  onMounted(() => {
-    nextTick(getTabBarHeight)
-    setTimeout(getTabBarHeight, 1000)
-    setTimeout(getTabBarHeight, 2000)
-    setTimeout(getTabBarHeight, 3000)
-  })
+  await nextTick(getTabBarHeight)
+  setTimeout(getTabBarHeight, 1000)
+  setTimeout(getTabBarHeight, 3000)
 
   return clientRect
 }

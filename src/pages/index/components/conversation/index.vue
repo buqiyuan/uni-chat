@@ -36,7 +36,7 @@
       @refresherabort="onAbort"
     >
       <template v-for="messageItem in messageList">
-        <message-item :key="messageItem.id" :message-item="messageItem" />
+        <conversation-item :key="messageItem.id" :message-item="messageItem" />
       </template>
     </scroll-view>
   </view>
@@ -45,11 +45,11 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, onMounted, computed } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
-import MessageItem from './message-item.vue'
+import ConversationItem from './conversation-item.vue'
 
 export default defineComponent({
-  name: 'Message',
-  components: { TopBar, MessageItem },
+  name: 'Conversation',
+  components: { TopBar, ConversationItem },
   emits: ['open-drawer'],
   setup(_, { root }) {
     const state = reactive({

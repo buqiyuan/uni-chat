@@ -59,8 +59,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '~@/components/chat-input-tools/chat-tools.scss';
+
 .emoji ::v-deep {
-  height: 40vh;
+  height: $tool-panel-height;
   display: flex;
   flex-direction: column;
   background-color: white;

@@ -15,17 +15,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from '@vue/composition-api'
+import { defineComponent, watchEffect, onMounted } from '@vue/composition-api'
 import { useClientRect } from '@/hooks/useClientRect'
 import { userStore } from '@/store'
 
 export default defineComponent({
   name: 'TopBar',
   setup(_, { root }) {
-    const clientRect = useClientRect('.top-bar')
-    const store = userStore()
-    watchEffect(() => {
-      store.commit('app/setTopBarheight', clientRect.value?.height)
+    onMounted(async () => {
+      const clientRect = await useClientRect('.top-bar')
+      const store = userStore()
+      watchEffect(() => {
+        store.commit('app/setTopBarHeight', clientRect.value?.height)
+      })
     })
 
     return {}

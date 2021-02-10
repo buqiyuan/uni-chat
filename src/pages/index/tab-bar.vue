@@ -5,9 +5,9 @@
         :key="tabItem.icon"
         :class="{ active: active === tabItem.icon }"
         class="tab-item"
-        @tap="tapTabItem(tabItem.icon)"
+        @tap="tapTabItem(tabItem)"
       >
-        <icon-font :icon="tabItem.icon" />
+        <image :src="getImageFullPath(tabItem)" class="tab-icon"></image>
         <view class="title">
           {{ tabItem.title }}
         </view>
@@ -21,22 +21,32 @@ import { defineComponent, reactive, toRefs, watchEffect } from '@vue/composition
 import { userStore } from '@/store'
 import { useClientRect } from '@/hooks/useClientRect'
 
+interface TabItem {
+  title: string
+  icon: string
+  compName: string
+}
+
 const tabs = [
   {
     title: '消息',
-    icon: 'message',
+    icon: 'conversation',
+    compName: 'conversation',
   },
   {
     title: '联系人',
     icon: 'contact',
+    compName: 'contact',
   },
   {
     title: '看点',
-    icon: 'look-point',
+    icon: 'see',
+    compName: 'look-point',
   },
   {
     title: '动态',
-    icon: 'dynamic',
+    icon: 'plugin',
+    compName: 'dynamic',
   },
 ]
 export default defineComponent({
@@ -44,25 +54,33 @@ export default defineComponent({
   emits: ['tab-change'],
   setup(_, { emit }) {
     const state = reactive({
-      active: tabs[0].icon,
+      active: tabs[0].compName,
       tabBarHeight: 0,
     })
 
-    const clientRect = useClientRect('.tab-bar')
-    const store = userStore()
+    ~(async () => {
+      const clientRect = await useClientRect('.tab-bar')
+      const store = userStore()
 
-    watchEffect(() => {
-      store.commit('app/setTabBarHeight', clientRect.value?.height)
-    })
+      watchEffect(() => {
+        store.commit('app/setTabBarHeight', clientRect.value?.height)
+      })
+    })()
 
-    const tapTabItem = (icon: string) => {
-      state.active = icon
-      emit('tab-change', icon)
+    // 获取图片路径
+    const getImageFullPath = (tabItem: TabItem) => {
+      return `/static/tabs/${tabItem.icon}_${state.active == tabItem.compName ? 'selected' : 'normal'}.png`
+    }
+    // 点击tab栏
+    const tapTabItem = (tabItem: TabItem) => {
+      state.active = tabItem.compName
+      emit('tab-change', tabItem.compName)
     }
 
     return {
       ...toRefs(state),
       tabs,
+      getImageFullPath,
       tapTabItem,
     }
   },
@@ -89,23 +107,14 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
 
-    &:active .iconfont {
-      transform: scale(0.3);
+    &:active .tab-icon {
+      transform: scale(0.05);
       transition: transform ease-in-out 0.3s;
     }
 
-    &.active {
-      color: #03081b;
-
-      .iconfont {
-        background-image: linear-gradient(to bottom, #91e0fe 20%, #3bc8ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-    }
-
-    .iconfont {
-      font-size: rpx(48);
+    .tab-icon {
+      width: rpx(60);
+      height: rpx(60);
     }
   }
 }
