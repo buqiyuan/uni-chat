@@ -1,12 +1,6 @@
 <template>
   <view class="speech">
-    <swiper
-      class="swiper"
-      :current-item-id="currentItemId"
-      :indicator-dots="false"
-      :autoplay="false"
-      @change="swiperChange"
-    >
+    <swiper class="swiper" :current-item-id="currentItemId" @change="swiperChange">
       <template v-for="(speechItem, speechIndex) in speechTypes">
         <swiper-item :key="speechIndex" class="swiper-item" :item-id="speechIndex + ''" @touchmove="touchmove">
           <view class="tips">{{ speechTypes[currentItemId].tips }}</view>
@@ -30,8 +24,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed, onMounted } from '@vue/composition-api'
-import { useClientRect } from '@/hooks/useClientRect'
+import { defineComponent, reactive, toRefs, computed, Ref, onMounted } from '@vue/composition-api'
+import { useClientRect, IClientRect } from '@/hooks/useClientRect'
 
 const speechTypes = [
   {
@@ -60,7 +54,7 @@ export default defineComponent({
     const state = reactive({
       currentItemId: '0',
       isPress: false, // 是否长按
-      indicatorRect: {},
+      indicatorRect: {}, // 指示器元素的信息
     })
 
     onMounted(async () => {
@@ -74,7 +68,7 @@ export default defineComponent({
     }
 
     const touchmove = (e: TouchEvent) => {
-      console.log(e)
+      // console.log(e)
     }
 
     // 图片路径
@@ -87,8 +81,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       imageFullPath,
-      touchmove,
       speechTypes,
+      touchmove,
       swiperChange,
     }
   },
@@ -132,6 +126,7 @@ export default defineComponent({
       color: #ccc;
       margin: 0 rpx(13);
       &.active {
+        margin-top: rpx(-5);
         font-size: rpx(32);
         color: black;
       }

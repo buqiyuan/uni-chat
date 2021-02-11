@@ -1,12 +1,5 @@
 <template>
-  <swiper
-    class="drawer-layout"
-    :current-item-id="currentItemId"
-    easing-function="easeInCubic"
-    :indicator-dots="false"
-    :autoplay="false"
-    @change="change"
-  >
+  <swiper class="drawer-layout" :current-item-id="currentItemId" easing-function="easeInCubic" @change="change">
     <swiper-item item-id="left" @touchstart="touchstart" @touchend="touchend" @touchmove="touchmove">
       <slot name="left">
         <left-content @close="close" />

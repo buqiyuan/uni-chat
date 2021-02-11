@@ -15,8 +15,17 @@ export interface IClientRect {
  * @param selector {string} 元素选择器
  * @description 获取元素宽高等
  */
-export const useClientRect = async (selector: string): Promise<Ref> => {
-  const clientRect = ref<IClientRect>()
+export const useClientRect = async (selector: string): Promise<Ref<IClientRect>> => {
+  const clientRect = ref<IClientRect>({
+    bottom: 0,
+    dataset: undefined,
+    height: 0,
+    id: '',
+    left: 0,
+    right: 0,
+    top: 0,
+    width: 0,
+  })
 
   const getTabBarHeight = () => {
     const info = uni.createSelectorQuery().select(selector)
@@ -30,7 +39,7 @@ export const useClientRect = async (selector: string): Promise<Ref> => {
 
   await nextTick(getTabBarHeight)
   setTimeout(getTabBarHeight, 1000)
-  setTimeout(getTabBarHeight, 3000)
+  console.log(clientRect, 'clientRect')
 
-  return clientRect
+  return clientRect as Ref<IClientRect>
 }

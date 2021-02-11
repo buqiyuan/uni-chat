@@ -1,12 +1,6 @@
 <template>
   <view class="emoji">
-    <swiper
-      class="swiper"
-      :current-item-id="currentItemId"
-      :indicator-dots="false"
-      :autoplay="false"
-      @change="swiperChange"
-    >
+    <swiper class="swiper" :current-item-id="currentItemId" @change="swiperChange">
       <template v-for="(emojiItem, emojiIndex) in emojis">
         <swiper-item :key="emojiIndex" :item-id="emojiIndex + ''">
           <emoji-item :emoji-item="emojiItem" :index="emojiIndex" :current-index="currentItemId" />
@@ -65,7 +59,6 @@ export default defineComponent({
   height: $tool-panel-height;
   display: flex;
   flex-direction: column;
-  background-color: white;
   .swiper {
     height: 100%;
   }

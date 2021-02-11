@@ -1,6 +1,6 @@
 <template>
   <view class="message-item" @tap="nav2chat">
-    <image class="message-logo" :src="messageItem.logo" />
+    <image class="message-logo" :lazy-load="true" :src="messageItem.logo" />
     <view class="message-body">
       <view class="message-head">
         <view class="message-title">

@@ -48,10 +48,16 @@
 /**
 * @description flex布局垂直水平居中
  */
-@mixin flex-center() {
+@mixin flex-center($args...) {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @each $key, $value in meta.keywords($args) {
+    &{
+      #{$key}: $value;
+    }
+  }
 }
 
 /**

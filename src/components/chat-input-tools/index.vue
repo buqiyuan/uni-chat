@@ -20,13 +20,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, onMounted } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
+import { EPlatform, Platform } from '@/utils/platform'
 import Speech from '@/components/chat-input-tools/components/speech/index.vue'
-import Photo from '@/components/chat-input-tools/components/Photo.vue'
-import Photograph from '@/components/chat-input-tools/components/Photograph.vue'
-import RedPacket from '@/components/chat-input-tools/components/RedPacket.vue'
+import Photo from '@/components/chat-input-tools/components/photo/index.vue'
+import Photograph from '@/components/chat-input-tools/components/photograph/index.vue'
+import RedPacket from '@/components/chat-input-tools/components/red-packet/index.vue'
 import Emoji from '@/components/chat-input-tools/components/emoji/Emoji.vue'
-import Other from '@/components/chat-input-tools/components/Other.vue'
+import Other from '@/components/chat-input-tools/components/other-tools/index.vue'
 
 const toolIcons = ['icon-yuyin', 'icon-tupian', 'icon-Camera1', 'icon-hongbao', 'icon-biaoqingjihuo', 'icon-add1']
 
@@ -41,6 +42,15 @@ export default defineComponent({
     })
 
     const tapTool = (iconName: string) => {
+      if (iconName == 'icon-Camera1' && Platform === EPlatform.AppPlus) {
+        return uni.scanCode({
+          onlyFromCamera: true, //只允许拍照，不允许本地相册
+          scanType: ['qrCode'], //扫码类型 以为 二位 xxx
+          success: (res) => {
+            console.log('条码内容：' + res)
+          },
+        })
+      }
       // 是否已经点击过了
       const isTaped = state.currentToolName === iconName
       state.isOpenEmojiPanel = !isTaped
@@ -102,6 +112,7 @@ export default defineComponent({
     max-height: 0;
     will-change: max-height;
     transition: max-height 0.6s;
+    background-color: white;
     &.opened {
       max-height: 60vh;
     }
