@@ -5,7 +5,9 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import { EPlatform, Platform } from '@/utils/platform'
+//#ifdef H5
 import { saveAs } from 'file-saver'
+//#endif
 
 const downloadLink = process.env.VUE_APP_APK_DOWNLOAD_URL || ''
 export default defineComponent({

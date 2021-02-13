@@ -22,7 +22,7 @@ export const browser = {
       isMQQbrowser: u.toLowerCase().match(/MQQbrowser/i)?.[0] == 'mqqbrowser', //  是否是微信打开的浏览器
     }
   })(),
-  language: navigator.language.toLowerCase(),
+  language: navigator?.language?.toLowerCase(),
 }
 //#endif
 

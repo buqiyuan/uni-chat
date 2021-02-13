@@ -8,13 +8,11 @@
             :lazy-load="true"
             webp
             :src="item.normal"
-            @touchend="previewEmoji = ''"
+            @tap="selectEmoji(item)"
             @longpress="longPress(item)"
           />
-          <view v-show="previewEmoji === item.active" class="emoji-preview">
-            <template v-if="previewEmoji === item.active">
-              <image webp class="emoji-gif" :src="item.active" />
-            </template>
+          <view v-if="previewEmoji === item.active" class="emoji-preview">
+            <image webp class="emoji-gif" :src="item.active" />
           </view>
         </view>
       </scroll-view>
@@ -23,29 +21,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watch, inject, PropType } from '@vue/composition-api'
+import { IProps, EmojiItem } from './types'
 
 export default defineComponent({
   name: 'EmojiItem',
   props: {
     emojiItem: {
-      type: Array,
+      type: Array as PropType<EmojiItem[]>,
       default: () => [],
     },
     index: {
-      type: [Number, String],
+      type: [Number, String] as PropType<string | number>,
       default: -1,
     },
     currentIndex: {
-      type: [Number, String],
+      type: [Number, String] as PropType<string | number>,
       default: '',
     },
   },
-  setup(props) {
+  setup(props: IProps) {
     const state = reactive({
       previewEmoji: '',
       isShow: false, // 是否加载表情包
     })
+
+    const setEmoji = inject('set-emoji') as (emoji: string) => any
 
     watch(
       () => props.currentIndex,
@@ -59,6 +60,13 @@ export default defineComponent({
       }
     )
 
+    // 选择表情
+    const selectEmoji = (emojiItem: EmojiItem) => {
+      state.previewEmoji = ''
+      setEmoji(emojiItem.active)
+      console.log(emojiItem, 'emojiItem')
+    }
+
     // 长按图标
     const longPress = (item: any) => {
       state.previewEmoji = item.active
@@ -66,6 +74,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      selectEmoji,
       longPress,
     }
   },

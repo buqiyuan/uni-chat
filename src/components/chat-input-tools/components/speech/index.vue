@@ -7,7 +7,7 @@
         </swiper-item>
       </template>
     </swiper>
-    <view class="speech-tool" @longpress="isPress = true" @touchend="isPress = false">
+    <view class="speech-tool" @longpress="longPress" @touchend="isPress = false">
       <image class="tool-image" :src="imageFullPath"></image>
     </view>
     <view class="indicator" :style="{ '--current-index': currentItemId, '--self-width': indicatorRect.width }">
@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, computed, Ref, onMounted } from '@vue/composition-api'
-import { useClientRect, IClientRect } from '@/hooks/useClientRect'
+import { useClientRect } from '@/hooks/useClientRect'
 
 const speechTypes = [
   {
@@ -71,6 +71,12 @@ export default defineComponent({
       // console.log(e)
     }
 
+    // 长按录制
+    const longPress = () => {
+      state.isPress = true
+      uni.vibrateLong({})
+    }
+
     // 图片路径
     const imageFullPath = computed(() => {
       const status = state.isPress ? 'press' : 'normal'
@@ -82,6 +88,7 @@ export default defineComponent({
       ...toRefs(state),
       imageFullPath,
       speechTypes,
+      longPress,
       touchmove,
       swiperChange,
     }

@@ -48,6 +48,9 @@ export default defineComponent({
 
       .tool-item {
         @include flex-center($flex-direction: column);
+        &:active {
+          background-color: rgba(0, 0, 0, 0.04);
+        }
 
         .image {
           width: rpx(100);

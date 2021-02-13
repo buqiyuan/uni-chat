@@ -1,13 +1,12 @@
 <template>
   <view>
-    <view :class="{ mask: isOpenEmojiPanel }" @tap.self="closePanel"></view>
     <view class="chat-input-tools">
       <view class="input-tools">
         <view v-for="iconItem in toolIcons" :key="iconItem" @tap="tapTool(iconItem)">
           <icon-font :icon="iconItem" :class="{ active: iconItem === currentToolName }" />
         </view>
       </view>
-      <view v-if="isMounted" class="panel" :class="{ opened: isOpenEmojiPanel }">
+      <view v-if="isMounted" class="panel" :class="{ opened: isOpenTools }" @tap="hideKeyboard">
         <Speech v-show="currentToolName === toolIcons[0]" />
         <Photo v-show="currentToolName === toolIcons[1]" />
         <Photograph v-show="currentToolName === toolIcons[2]" />
@@ -20,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, toRefs, watch, PropType } from '@vue/composition-api'
 import { EPlatform, Platform } from '@/utils/platform'
 import Speech from '@/components/chat-input-tools/components/speech/index.vue'
 import Photo from '@/components/chat-input-tools/components/photo/index.vue'
@@ -28,41 +27,67 @@ import Photograph from '@/components/chat-input-tools/components/photograph/inde
 import RedPacket from '@/components/chat-input-tools/components/red-packet/index.vue'
 import Emoji from '@/components/chat-input-tools/components/emoji/Emoji.vue'
 import Other from '@/components/chat-input-tools/components/other-tools/index.vue'
+import { IProps } from './types'
 
 const toolIcons = ['icon-yuyin', 'icon-tupian', 'icon-Camera1', 'icon-hongbao', 'icon-biaoqingjihuo', 'icon-add1']
 
 export default defineComponent({
   name: 'ChatInputTools',
   components: { Other, Emoji, RedPacket, Photograph, Photo, Speech },
-  setup() {
+  model: {
+    prop: 'isOpenTools',
+    event: 'changeModel',
+  },
+  props: {
+    isOpenTools: {
+      // 是否打开工具面板
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+  },
+  setup(props: IProps, { emit }) {
     const state = reactive({
       currentToolName: '',
       isMounted: false,
-      isOpenEmojiPanel: false, // 是否已经打开表情面板
     })
+
+    // 关闭工具面板时，取消选中图标
+    watch(
+      () => props.isOpenTools,
+      (value) => {
+        if (!value) {
+          state.currentToolName = ''
+        }
+      }
+    )
 
     const tapTool = (iconName: string) => {
       if (iconName == 'icon-Camera1' && Platform === EPlatform.AppPlus) {
-        return uni.scanCode({
-          onlyFromCamera: true, //只允许拍照，不允许本地相册
-          scanType: ['qrCode'], //扫码类型 以为 二位 xxx
+        return uni.chooseImage({
+          sourceType: ['camera'],
+          sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
           success: (res) => {
-            console.log('条码内容：' + res)
+            for (let i = 0; i < res.tempFilePaths.length; i++) {
+              uni.getImageInfo({
+                src: res.tempFilePaths[i],
+                success: (image) => {
+                  console.log(image, '图片信息')
+                },
+              })
+            }
           },
         })
       }
       // 是否已经点击过了
       const isTaped = state.currentToolName === iconName
-      state.isOpenEmojiPanel = !isTaped
       state.currentToolName = isTaped ? '' : iconName
       state.isMounted = true
-      console.log(state.currentToolName)
+      emit('changeModel', !isTaped)
+      uni.hideKeyboard()
     }
 
-    // 关闭面板
-    const closePanel = () => {
-      state.isOpenEmojiPanel = false
-      state.currentToolName = ''
+    const hideKeyboard = () => {
+      uni.hideKeyboard()
     }
 
     onMounted(() => {
@@ -74,7 +99,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       toolIcons,
-      closePanel,
+      hideKeyboard,
       tapTool,
     }
   },
@@ -82,17 +107,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.mask {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  z-index: -1;
-}
 .chat-input-tools {
   position: relative;
-  z-index: 10;
   content-visibility: auto;
 
   .input-tools {
@@ -110,11 +126,12 @@ export default defineComponent({
   }
   .panel {
     max-height: 0;
-    will-change: max-height;
-    transition: max-height 0.6s;
+    opacity: 0;
     background-color: white;
+    transition: max-height 0.3s, opacity 0.1s;
     &.opened {
-      max-height: 60vh;
+      max-height: 42vh;
+      opacity: 1;
     }
   }
 }

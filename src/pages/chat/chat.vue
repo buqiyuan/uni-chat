@@ -15,6 +15,8 @@
         </view>
       </template>
     </top-bar>
+    <!--    聊天消息列表-->
+    <!--    聊天输入框-->
     <chat-input />
   </view>
 </template>

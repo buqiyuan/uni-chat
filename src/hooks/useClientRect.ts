@@ -1,31 +1,11 @@
-import { nextTick, onMounted, ref, Ref } from '@vue/composition-api'
-
-export interface IClientRect {
-  bottom: number
-  dataset: any
-  height: number
-  id: string
-  left: number
-  right: number
-  top: number
-  width: number
-}
+import { nextTick, ref, Ref } from '@vue/composition-api'
 
 /**
  * @param selector {string} 元素选择器
  * @description 获取元素宽高等
  */
-export const useClientRect = async (selector: string): Promise<Ref<IClientRect>> => {
-  const clientRect = ref<IClientRect>({
-    bottom: 0,
-    dataset: undefined,
-    height: 0,
-    id: '',
-    left: 0,
-    right: 0,
-    top: 0,
-    width: 0,
-  })
+export const useClientRect = async (selector: string): Promise<Ref<UniApp.NodeInfo>> => {
+  const clientRect = ref<UniApp.NodeInfo>()
 
   const getTabBarHeight = () => {
     const info = uni.createSelectorQuery().select(selector)
@@ -39,7 +19,6 @@ export const useClientRect = async (selector: string): Promise<Ref<IClientRect>>
 
   await nextTick(getTabBarHeight)
   setTimeout(getTabBarHeight, 1000)
-  console.log(clientRect, 'clientRect')
 
-  return clientRect as Ref<IClientRect>
+  return clientRect as Ref<UniApp.NodeInfo>
 }

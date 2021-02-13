@@ -1,7 +1,16 @@
 <script lang="ts">
 import Vue from 'vue'
+
 export default Vue.extend({
   mpType: 'app',
+  onShow() {
+    uni.onKeyboardHeightChange((res) => {
+      if (res.height > 0) {
+        this.$store.commit('app/setKeyboardHeight', res.height)
+      }
+      console.log(this.$store.state.app.keyboardHeight)
+    })
+  },
 })
 </script>
 
