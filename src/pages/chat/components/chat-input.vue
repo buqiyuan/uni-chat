@@ -9,7 +9,7 @@
           :change:emoji="renderScript.receiveEmoji"
           @input="changeText"
           @ready="onEditorReady"
-          @focus="onfocus"
+          @focus.prevent="onfocus"
           @touchstart="showKeyboard"
           @tap="renderScript.getCursorPosition"
         >
@@ -112,7 +112,7 @@ export default defineComponent({
 </script>
 
 <script module="renderScript" lang="renderjs">
-import a from './test.js'
+import a from './chatInputRender.js'
 export default a
 </script>
 

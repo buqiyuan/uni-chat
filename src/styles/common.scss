@@ -10,6 +10,9 @@ text {
     width: 0;
   }
 }
+::-webkit-scrollbar{
+  display: none;
+}
 image {
   will-change: transform;
 }

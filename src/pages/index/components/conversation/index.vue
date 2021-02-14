@@ -35,36 +35,94 @@
       @refresherrestore="onRestore"
       @refresherabort="onAbort"
     >
-      <template v-for="messageItem in messageList">
-        <conversation-item :key="messageItem.id" :message-item="messageItem" />
+      <template v-for="chatItem in chatArr">
+        <!--        群消息-->
+        <template v-if="chatItem.groupId">
+          <group-item :key="chatItem.groupId" :message-item="chatItem" />
+        </template>
+        <!--        好友消息-->
+        <template v-else-if="chatItem.userId">
+          <friend-item :key="chatItem.userId" :message-item="chatItem" />
+        </template>
       </template>
     </scroll-view>
   </view>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, onMounted, computed } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, onMounted, watch, computed } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
-import ConversationItem from './conversation-item.vue'
+import FriendItem from './friend-item.vue'
+import GroupItem from './group-item.vue'
+import store from '@/store'
+import { minCache } from '@/utils/MinCache'
 
 export default defineComponent({
   name: 'Conversation',
-  components: { TopBar, ConversationItem },
+  components: { TopBar, FriendItem, GroupItem },
   emits: ['open-drawer'],
   setup(_, { root }) {
     const state = reactive({
       triggered: true as boolean | string,
       _freshing: false,
+      chatArr: [] as Array<Group | Friend>,
     })
 
-    const messageList = computed(() => root.$store.state.message.messageList)
+    const groupGather = computed((): GroupGather => store.getters['chat/groupGather'])
+    const friendGather = computed((): FriendGather => store.getters['chat/friendGather'])
+    const currentUserId = computed((): string => store.getters['app/user'])
+
+    watch([groupGather, friendGather], () => {
+      sortChat()
+    })
 
     onMounted(() => {
+      sortChat()
       state._freshing = false
       setTimeout(() => {
         state.triggered = false
       }, 100)
     })
+
+    // 获取消息列表数据
+    const sortChat = async () => {
+      const groups = Object.values(groupGather.value)
+      const friends = Object.values(friendGather.value)
+      // 此处避免Await造成v-for页面闪烁问题,所以在最后才赋值this.chatArr = roomArr;
+      let roomArr = [...groups, ...friends]
+      // 此处需要过滤本地已删除的会话
+      const deletedChat = (await minCache.get(`${currentUserId.value}-deletedChatId`)) as string[]
+      if (Array.isArray(deletedChat)) {
+        roomArr = roomArr.filter((chat) => !deletedChat.includes((chat as Group).groupId || chat.userId))
+      }
+
+      // 对聊天窗进行排序(根据最新消息时间)
+      roomArr = roomArr.sort((a: Group | Friend, b: Group | Friend) => {
+        if (a.messages && b.messages) {
+          // @ts-ignore
+          return b.messages[b.messages.length - 1].time - a.messages[a.messages.length - 1].time
+        }
+        if (a.messages) {
+          return -1
+        }
+        return 1
+      })
+
+      // 查看是否有需要置顶列表
+      const topChatId = (await minCache.get(`${currentUserId.value}-topChatId`)) as string
+      if (topChatId) {
+        // 找到需要置顶的窗口
+        const chat = roomArr.find((c) => ((c as Group).groupId || c.userId) === topChatId)
+        if (chat) {
+          // 移动至第一位
+          roomArr = roomArr.filter((k) => ((k as Group).groupId || k.userId) !== topChatId)
+          chat.isTop = true
+          roomArr.unshift(chat)
+        }
+      }
+      console.log(roomArr, 'roomArr')
+      state.chatArr = roomArr
+    }
 
     const onPulling = (e: any) => {
       // console.log("onpulling", e);
@@ -87,7 +145,6 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      messageList,
       onPulling,
       onRefresh,
       onRestore,

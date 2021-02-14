@@ -2,10 +2,10 @@
   <view class="login">
     <form class="login-form">
       <view class="login-form-item">
-        <input v-model="username" class="input" placeholder="QQ号/手机号/邮箱" />
+        <input v-model="username" class="input" maxlength="16" placeholder="QQ号/手机号/邮箱" />
       </view>
       <view class="login-form-item">
-        <input v-model="password" class="input" placeholder="密码" />
+        <input v-model="password" password maxlength="16" class="input" placeholder="密码" />
       </view>
       <view class="uni-btn-v">
         <button
@@ -33,10 +33,11 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api'
+import store from '@/store'
 
 export default defineComponent({
   name: 'Login',
-  setup() {
+  setup(_, { root }) {
     const state = reactive({
       username: '',
       password: '',
@@ -54,16 +55,22 @@ export default defineComponent({
       return state.username.trim() == '' || state.password.trim() == ''
     }
     // 用户登录
-    const login = () => {
+    const login = async () => {
       if (isEmpty()) {
         return uni.showToast({ title: '用户名或密码不能为空', icon: 'none' })
       }
       state.loginLoading = true
       const { username, password } = state
       console.log(username, password)
-      setTimeout(() => {
-        state.loginLoading = false
-      }, 1000)
+      const data = await store.dispatch('app/login', { username, password }).finally(() => (state.loginLoading = false))
+      if (data) {
+        await store.dispatch('chat/connectSocket')
+        setTimeout(() =>
+          root.$Router.push({
+            name: 'index',
+          })
+        )
+      }
     }
     // 注册用户
     const register = () => {

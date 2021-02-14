@@ -24,18 +24,17 @@
 
 <script lang="ts">
 import { defineComponent, PropType, SetupContext } from '@vue/composition-api'
-import { MessageItem } from '@/store/modules/message'
 import dayjs from 'dayjs'
 
 interface IProps {
-  messageItem: MessageItem
+  messageItem: Group
 }
 
 export default defineComponent({
-  name: 'ConversationItem',
+  name: 'group-item',
   props: {
     messageItem: {
-      type: Object as PropType<MessageItem>,
+      type: Object as PropType<Group>,
       default: () => ({}),
     },
   },
@@ -44,8 +43,7 @@ export default defineComponent({
       ctx.root.$Router.push({
         name: 'chat',
         params: {
-          id: props.messageItem.id,
-          title: props.messageItem.title,
+          id: props.messageItem.groupId,
         },
       })
     }

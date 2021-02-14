@@ -1,4 +1,5 @@
 import { RouterMount, createRouter, runtimeQuit, totalNextRoute } from 'uni-simple-router'
+import { minCache } from '@/utils/MinCache'
 
 const router = createRouter({
   platform: process.env.VUE_APP_PLATFORM as any,
@@ -22,8 +23,13 @@ const router = createRouter({
   ],
 })
 //全局路由前置守卫
-router.beforeEach((to: totalNextRoute, from: totalNextRoute, next: () => void) => {
-  next()
+router.beforeEach((to: totalNextRoute, from: totalNextRoute, next) => {
+  const token = minCache.get('token')
+  if (token || to.name == 'login') {
+    next()
+  } else {
+    next({ name: 'login' })
+  }
 })
 // 全局路由后置守卫
 router.afterEach((to: totalNextRoute, from: totalNextRoute) => {

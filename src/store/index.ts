@@ -1,24 +1,25 @@
-import Vuex from 'vuex'
 import Vue from 'vue'
+import Vuex, { ModuleTree } from 'vuex'
+// app
+import app from './modules/app'
+import { AppState } from './modules/app/state'
+// chat
+import chat from './modules/chat'
+import { ChatState } from './modules/chat/state'
 
+export type RootState = {
+  app: AppState
+  chat: ChatState
+}
 Vue.use(Vuex)
 
-import getters from '@/store/getters'
-import { app } from './modules/app'
-import { message } from './modules/message'
+const modules: ModuleTree<RootState> = {
+  app,
+  chat,
+}
 
 const store = new Vuex.Store({
-  getters,
-  modules: {
-    app,
-    message,
-  },
+  modules,
 })
 
 export default store
-
-type Store = typeof store
-
-export const userStore = (): Store => {
-  return store
-}

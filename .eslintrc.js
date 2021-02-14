@@ -31,6 +31,7 @@ module.exports = {
     'no-console': 'off',
     'no-debugger': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
     'prettier/prettier': [
       'error',
       {
@@ -38,4 +39,4 @@ module.exports = {
       },
     ],
   },
-};
+}

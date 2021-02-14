@@ -21,6 +21,7 @@ import LookPoint from './components/look-point/index.vue'
 import Dynamic from './components/dynamic/index.vue'
 
 export default defineComponent({
+  name: 'index',
   components: { DrawerLayout, TabBar, Conversation, Contact, LookPoint, Dynamic },
   setup(_, { root }) {
     const drawerLayoutRef = ref<any>(null)

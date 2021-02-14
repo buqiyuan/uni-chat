@@ -123,6 +123,7 @@
         },
         "devServer" : {
             "https" : false
-        }
+        },
+        "title" : "uni-chat"
     }
 }

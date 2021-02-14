@@ -10,6 +10,11 @@ Vue.component('IconFont', IconFont)
 
 Vue.config.productionTip = false
 
+Vue.prototype.$message = {
+  error: (msg: string) => uni.showToast({ title: msg }),
+  info: (msg: string) => uni.showToast({ title: msg }),
+  success: (msg: string) => uni.showToast({ title: msg, icon: 'success' }),
+}
 // new App({
 //   store,
 // }).$mount()

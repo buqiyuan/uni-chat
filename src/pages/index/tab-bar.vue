@@ -18,7 +18,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watchEffect } from '@vue/composition-api'
-import { userStore } from '@/store'
+import store from '@/store'
+import { SET_TAB_BAR_HEIGHT } from '@/store/modules/app/mutation-types'
 import { useClientRect } from '@/hooks/useClientRect'
 
 interface TabItem {
@@ -60,10 +61,9 @@ export default defineComponent({
 
     ~(async () => {
       const clientRect = await useClientRect('.tab-bar')
-      const store = userStore()
 
       watchEffect(() => {
-        store.commit('app/setTabBarHeight', clientRect.value?.height)
+        store.commit(`app/${SET_TAB_BAR_HEIGHT}`, clientRect.value?.height)
       })
     })()
 
