@@ -65,11 +65,15 @@ export default defineComponent({
       const data = await store.dispatch('app/login', { username, password }).finally(() => (state.loginLoading = false))
       if (data) {
         await store.dispatch('chat/connectSocket')
-        setTimeout(() =>
-          root.$Router.push({
+        uni.showLoading({
+          title: '聊天信息加载中',
+        })
+        setTimeout(() => {
+          uni.hideLoading()
+          root.$Router.replace({
             name: 'index',
           })
-        )
+        }, 1000)
       }
     }
     // 注册用户

@@ -4,19 +4,21 @@
       :x="moveX"
       :damping="36"
       :animation="animation"
-      class="drawer-content"
+      class="movable-view"
       direction="horizontal"
       @change="onChange"
       @touchstart="touchstart"
       @touchend="touchend"
     >
-      <view class="left">
-        <slot name="left">
-          <left-content @close="close" />
-        </slot>
-      </view>
-      <view class="right">
-        <slot name="right" />
+      <view class="drawer-content">
+        <view class="left">
+          <slot name="left">
+            <left-content @close="close" />
+          </slot>
+        </view>
+        <view class="right">
+          <slot name="right" />
+        </view>
       </view>
     </movable-view>
   </movable-area>
@@ -159,21 +161,26 @@ export default defineComponent({
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3);
 
-  .drawer-content {
-    display: flex;
-    width: 200%;
+  .movable-view {
+    width: 200vw;
     height: 100vh;
-    overflow: hidden;
-    background-color: white;
-    &::-webkit-scrollbar {
-      width: 0;
-      background: transparent;
-    }
+    .drawer-content {
+      display: grid;
+      width: 200vw;
+      height: 100vh;
+      grid-template-columns: repeat(2, 100vw);
+      overflow: hidden;
+      background-color: white;
+      &::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+      }
 
-    .left,
-    .right {
-      width: 100%;
-      transform: translate(0);
+      .left,
+      .right {
+        width: 100%;
+        transform: translate(0);
+      }
     }
   }
 }

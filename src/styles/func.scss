@@ -54,7 +54,7 @@
   align-items: center;
 
   @each $key, $value in meta.keywords($args) {
-    &{
+    & {
       #{$key}: $value;
     }
   }
@@ -68,12 +68,15 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $line;
   overflow: hidden;
+  @if ($line == 1) {
+    word-break: break-all;
+    text-overflow: ellipsis;
+  }
 }
 /**
 * @description 三角气泡框
  */
 @mixin popover($placement, $args...) {
-
   &::after {
     content: '';
     position: absolute;
@@ -86,31 +89,34 @@
   }
 
   @each $key, $value in meta.keywords($args) {
-    &::after{
+    &::after {
       #{$key}: $value;
     }
   }
 
   &::after {
-    @if($placement == 'top') {
+    @if ($placement == 'top') {
       border-bottom-width: 0;
       border-top-color: currentColor;
       bottom: 0;
       left: 50%;
       transform: translate(-50%, 100%);
-    } @if($placement == 'bottom') {
+    }
+    @if ($placement == 'bottom') {
       border-top-width: 0;
       border-bottom-color: currentColor;
       top: 0;
       left: 50%;
       transform: translate(-50%, -100%);
-    } @if($placement == 'left') {
+    }
+    @if ($placement == 'left') {
       border-right-width: 0;
       border-left-color: currentColor;
       right: 0;
       top: 50%;
       transform: translate(100%, -50%);
-    } @if($placement == 'right') {
+    }
+    @if ($placement == 'right') {
       border-left-width: 0;
       border-right-color: currentColor;
       left: 0;

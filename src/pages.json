@@ -10,26 +10,26 @@
     //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
       "path": "pages/login/login",
-      "aliasPath":"/login",
-      "name":"login",
+      "aliasPath": "/login",
+      "name": "login",
       "style": {
         "app-plus": {
-          "softinputMode":"adjustPan"
+          "softinputMode": "adjustPan"
         }
       }
     },
     {
       "path": "pages/index/index",
-      "aliasPath":"/index",
-      "name":"index"
+      "aliasPath": "/index",
+      "name": "index"
     },
     {
       "path": "pages/chat/chat",
-      "aliasPath":"/chat/:id",
-      "name":"chat",
+      "aliasPath": "/chat/:id",
+      "name": "chat",
       "style": {
         "app-plus": {
-          "softinputMode":"adjustResize"
+          "softinputMode": "adjustResize"
         }
       }
     }

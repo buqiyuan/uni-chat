@@ -50,12 +50,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, onMounted, watch, computed } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, onMounted } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
 import FriendItem from './friend-item.vue'
 import GroupItem from './group-item.vue'
-import store from '@/store'
-import { minCache } from '@/utils/MinCache'
+import { getChatArr } from './getChatArr'
 
 export default defineComponent({
   name: 'Conversation',
@@ -63,18 +62,11 @@ export default defineComponent({
   emits: ['open-drawer'],
   setup(_, { root }) {
     const state = reactive({
-      triggered: true as boolean | string,
+      triggered: true as any,
       _freshing: false,
-      chatArr: [] as Array<Group | Friend>,
     })
-
-    const groupGather = computed((): GroupGather => store.getters['chat/groupGather'])
-    const friendGather = computed((): FriendGather => store.getters['chat/friendGather'])
-    const currentUserId = computed((): string => store.getters['app/user'])
-
-    watch([groupGather, friendGather], () => {
-      sortChat()
-    })
+    // 获取聊天信息列表
+    const { sortChat, chatArr } = getChatArr()
 
     onMounted(() => {
       sortChat()
@@ -84,57 +76,19 @@ export default defineComponent({
       }, 100)
     })
 
-    // 获取消息列表数据
-    const sortChat = async () => {
-      const groups = Object.values(groupGather.value)
-      const friends = Object.values(friendGather.value)
-      // 此处避免Await造成v-for页面闪烁问题,所以在最后才赋值this.chatArr = roomArr;
-      let roomArr = [...groups, ...friends]
-      // 此处需要过滤本地已删除的会话
-      const deletedChat = (await minCache.get(`${currentUserId.value}-deletedChatId`)) as string[]
-      if (Array.isArray(deletedChat)) {
-        roomArr = roomArr.filter((chat) => !deletedChat.includes((chat as Group).groupId || chat.userId))
-      }
-
-      // 对聊天窗进行排序(根据最新消息时间)
-      roomArr = roomArr.sort((a: Group | Friend, b: Group | Friend) => {
-        if (a.messages && b.messages) {
-          // @ts-ignore
-          return b.messages[b.messages.length - 1].time - a.messages[a.messages.length - 1].time
-        }
-        if (a.messages) {
-          return -1
-        }
-        return 1
-      })
-
-      // 查看是否有需要置顶列表
-      const topChatId = (await minCache.get(`${currentUserId.value}-topChatId`)) as string
-      if (topChatId) {
-        // 找到需要置顶的窗口
-        const chat = roomArr.find((c) => ((c as Group).groupId || c.userId) === topChatId)
-        if (chat) {
-          // 移动至第一位
-          roomArr = roomArr.filter((k) => ((k as Group).groupId || k.userId) !== topChatId)
-          chat.isTop = true
-          roomArr.unshift(chat)
-        }
-      }
-      console.log(roomArr, 'roomArr')
-      state.chatArr = roomArr
-    }
-
     const onPulling = (e: any) => {
       // console.log("onpulling", e);
     }
     const onRefresh = () => {
       if (state._freshing) return
       state._freshing = true
+      sortChat()
       setTimeout(() => {
         state.triggered = false
         state._freshing = false
       }, 1500)
     }
+
     const onRestore = () => {
       state.triggered = 'restore' // 需要重置
       // console.log("onRestore");
@@ -145,6 +99,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      chatArr,
       onPulling,
       onRefresh,
       onRestore,

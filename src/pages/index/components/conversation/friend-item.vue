@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, SetupContext, computed } from '@vue/composition-api'
+import { defineComponent, PropType, SetupContext, computed, ref, watchEffect } from '@vue/composition-api'
 import { formatTime } from '@/utils/common'
 import store from '@/store'
 
@@ -41,8 +41,16 @@ export default defineComponent({
   },
   setup(props: IProps, ctx: SetupContext) {
     console.log(props.messageItem, 'friend-item')
-    const apiUrl = computed(() => store.getters['app/apiUrl'])
-    const lastMessage = computed(() => props.messageItem?.messages?.slice(-1)[0])
+    const lastMessage = ref<FriendMessage>()
+
+    watchEffect(() => {
+      lastMessage.value = props.messageItem.messages?.slice(-1)[0]
+    })
+    // 服务器地址
+    const apiUrl = computed((): string => store.getters['app/apiUrl'])
+    //TODO 最新的一条消息（APP端检测不到值的变化。。。）
+    // const lastMessage = computed((): FriendMessage => props.messageItem?.messages?.slice(-1)[0] as FriendMessage)
+
     const nav2chat = () => {
       ctx.root.$Router.push({
         name: 'chat',
@@ -71,12 +79,14 @@ export default defineComponent({
 
   .message-logo {
     @include el-to-circle(92);
+    flex-shrink: 0;
   }
 
   .message-body {
     flex: auto;
     display: flex;
     flex-direction: column;
+    min-width: 0;
     margin: 0 rpx(16);
 
     .message-head {
@@ -99,6 +109,7 @@ export default defineComponent({
       .new-message {
         font-size: rpx(28);
         color: #d3dae2;
+        @include text-ellipsis();
       }
 
       .message-unread {

@@ -1,5 +1,5 @@
-@import "vars";
-@import "func";
+@import 'vars';
+@import 'func';
 body {
   overflow: hidden;
 }
@@ -10,14 +10,15 @@ text {
     width: 0;
   }
 }
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   display: none;
 }
 image {
   will-change: transform;
 }
-uni-app, .uni-app--maxwidth {
-  width: $max-width;
+uni-app,
+.uni-app--maxwidth {
+  width: 100vw;
   margin: 0 auto;
   transform: translate(0);
 }

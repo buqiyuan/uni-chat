@@ -16,8 +16,6 @@ const getters: GetterTree<AppState, RootState> = {
     return state.mobile
   },
   background(state) {
-    // eslint-disable-next-line no-unused-expressions
-    state.background
     return localStorage.getItem('background')
   },
   activeTabName(state) {

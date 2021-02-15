@@ -21,7 +21,7 @@ const appState: AppState = {
     avatar: '',
     createTime: 0,
   },
-  token: minCache.get('token') as string,
+  token: minCache.get('token') || '',
   mobile: false,
   background: '',
   activeTabName: 'message',

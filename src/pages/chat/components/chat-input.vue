@@ -29,6 +29,7 @@
 <script>
 import { defineComponent, reactive, toRefs, computed, ref, provide } from '@vue/composition-api'
 import ChatInputTools from '@/components/chat-input-tools/index.vue'
+import store from '@/store'
 
 export default defineComponent({
   name: 'ChatInput',
@@ -40,10 +41,11 @@ export default defineComponent({
       isOpenTools: false, // 是否打开工具面板
       editorContext: null, // 文本框对象
     })
+    const apiUrl = computed(() => store.getters['app/apiUrl'])
 
     // 设置表情
     provide('set-emoji', (emoji) => {
-      state.emoji = `<img width="20" height="20" src="http://192.168.31.195:8080/uni-chat${emoji}">`
+      state.emoji = `<img width="20" height="20" src="${apiUrl.value}/uni-chat${emoji}">`
     })
 
     const onBlur = () => {

@@ -1,4 +1,4 @@
-declare module 'socket.io-client'
+declare module '@hyoga/uni-socket.io'
 
 // 所有群的群信息
 interface GroupGather {
