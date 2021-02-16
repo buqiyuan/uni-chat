@@ -15,6 +15,8 @@ Vue.prototype.$message = {
   info: (msg: string) => uni.showToast({ title: msg }),
   success: (msg: string) => uni.showToast({ title: msg, icon: 'success' }),
 }
+import uView from 'uview-ui'
+Vue.use(uView)
 // new App({
 //   store,
 // }).$mount()

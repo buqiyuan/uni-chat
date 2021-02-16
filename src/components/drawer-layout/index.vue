@@ -4,6 +4,7 @@
       :x="moveX"
       :damping="36"
       :animation="animation"
+      :disabled="disabled"
       class="movable-view"
       direction="horizontal"
       @change="onChange"
@@ -24,8 +25,8 @@
   </movable-area>
 </template>
 
-<script>
-import { defineComponent, reactive, toRefs, watch, nextTick } from '@vue/composition-api'
+<script lang="ts">
+import { defineComponent, reactive, toRefs, watch, PropType, nextTick } from '@vue/composition-api'
 import LeftContent from './left-content.vue'
 
 export default defineComponent({
@@ -38,7 +39,11 @@ export default defineComponent({
   props: {
     isOpen: {
       // 是否打开抽屉
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    disabled: {
+      type: Boolean as PropType<boolean>,
       default: false,
     },
   },
@@ -84,12 +89,13 @@ export default defineComponent({
       }
     )
 
-    const onChange = (e) => {
+    const onChange = (e: any) => {
       state.scrollX = e.detail.x
     }
 
     // 切换
     const doSwitch = () => {
+      if (props.disabled) return
       setTimeout(() => {
         // 如果正处于关闭中的状态，则
         if (state.isMoving) {
@@ -103,7 +109,8 @@ export default defineComponent({
     }
 
     // 触摸结束
-    const touchend = (e) => {
+    const touchend = (e: TouchEvent) => {
+      if (props.disabled) return
       state.animation = true
       state.moveX = state.scrollX
       // 如果y轴滑动的距离比较大，则不进行切换。
@@ -126,7 +133,7 @@ export default defineComponent({
       }
     }
 
-    const touchstart = (e) => {
+    const touchstart = (e: TouchEvent) => {
       const { timeStamp, changedTouches } = e
       state.animation = false
       state.startTimeStamp = timeStamp

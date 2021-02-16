@@ -14,7 +14,13 @@
           @tap="renderScript.getCursorPosition"
         >
         </editor>
-        <button class="send-btn" :class="{ 'send-enable': message }" type="primary" size="mini" @tap="sendMessage">
+        <button
+          class="send-btn"
+          :class="{ 'send-enable': message.length > 11 }"
+          type="primary"
+          size="mini"
+          @tap="preSendMessage"
+        >
           发送
         </button>
       </view>
@@ -29,7 +35,8 @@
 <script>
 import { defineComponent, reactive, toRefs, computed, ref, provide } from '@vue/composition-api'
 import ChatInputTools from '@/components/chat-input-tools/index.vue'
-import store from '@/store'
+import { useSendMessage } from './useSendMessage'
+import { isH5 } from '@/utils/platform'
 
 export default defineComponent({
   name: 'ChatInput',
@@ -41,11 +48,13 @@ export default defineComponent({
       isOpenTools: false, // 是否打开工具面板
       editorContext: null, // 文本框对象
     })
-    const apiUrl = computed(() => store.getters['app/apiUrl'])
+    const { chatType, id } = root.$Route.query
+
+    const { sendMessage } = useSendMessage()
 
     // 设置表情
     provide('set-emoji', (emoji) => {
-      state.emoji = `<img width="20" height="20" src="${apiUrl.value}/uni-chat${emoji}">`
+      state.emoji = `<img width="20" height="20" src="/uni-chat${emoji}">`
     })
 
     const onBlur = () => {
@@ -67,11 +76,14 @@ export default defineComponent({
 
     // 显示键盘并关闭面板
     const showKeyboard = () => {
-      closePanel()
+      if (!isH5) {
+        closePanel()
+      }
     }
 
     // 输入文本
-    const changeText = () => {
+    const changeText = (e) => {
+      state.message = e.detail.html
       // state.message = inputBoxRef.value!.$el.innerHTML
     }
     function onEditorReady() {
@@ -94,9 +106,26 @@ export default defineComponent({
       uni.hideKeyboard()
     }
 
-    // 发送消息
-    const sendMessage = () => {
-      // state.editorContext.clear({})
+    // 发送消息之前做一些处理校验
+    const preSendMessage = () => {
+      state.editorContext.getContents({
+        success: (res) => {
+          const text = res.html
+          console.log(text, '将要发送的文本消息，这里用的是富文本')
+          if (text.trim().length < 12) {
+            console.log('不能发送空消息!')
+            // uni.showToast('不能发送空消息!')
+            return
+          }
+
+          if (chatType === 'group') {
+            sendMessage({ type: 'group', message: text, messageType: 'text' })
+          } else {
+            sendMessage({ type: 'friend', message: text, messageType: 'text' })
+          }
+          state.editorContext.clear({})
+        },
+      })
     }
 
     return {
@@ -107,7 +136,7 @@ export default defineComponent({
       closePanel,
       changeText,
       onBlur,
-      sendMessage,
+      preSendMessage,
     }
   },
 })

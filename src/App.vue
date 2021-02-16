@@ -25,6 +25,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import 'uview-ui/theme.scss';
+@import 'uview-ui/index.scss';
 /* 每个页面公共css */
 @import 'styles/iconfont.css';
 @import '~@/styles/common.scss';

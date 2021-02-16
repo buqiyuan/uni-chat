@@ -15,7 +15,10 @@
         </view>
       </view>
       <view class="message-footer">
-        <view class="new-message"> {{ lastMessage.username }}: {{ lastMessage.content }} </view>
+        <view class="new-message">
+          {{ lastMessage.username }}:
+          <rich-text :nodes="lastMessage.content"></rich-text>
+        </view>
         <view v-if="messageItem.unread" class="message-unread">
           {{ messageItem.unread }}
         </view>
@@ -59,6 +62,7 @@ export default defineComponent({
         name: 'chat',
         params: {
           id: props.messageItem.groupId,
+          chatType: 'group',
         },
       })
     }

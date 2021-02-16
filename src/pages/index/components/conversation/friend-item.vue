@@ -12,7 +12,7 @@
       </view>
       <view class="message-footer">
         <view class="new-message">
-          {{ lastMessage.content }}
+          <rich-text :nodes="lastMessage.content"></rich-text>
         </view>
         <view v-if="messageItem.unread" class="message-unread">
           {{ messageItem.unread }}
@@ -39,7 +39,7 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props: IProps, ctx: SetupContext) {
+  setup(props: IProps, { root }: SetupContext) {
     console.log(props.messageItem, 'friend-item')
     const lastMessage = ref<FriendMessage>()
 
@@ -52,10 +52,11 @@ export default defineComponent({
     // const lastMessage = computed((): FriendMessage => props.messageItem?.messages?.slice(-1)[0] as FriendMessage)
 
     const nav2chat = () => {
-      ctx.root.$Router.push({
+      root.$Router.push({
         name: 'chat',
         params: {
           id: props.messageItem.userId,
+          chatType: 'friend',
         },
       })
     }

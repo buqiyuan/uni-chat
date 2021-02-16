@@ -10,7 +10,8 @@ export const getChatArr = () => {
 
   const groupGather = computed((): GroupGather => store.getters['chat/groupGather'])
   const friendGather = computed((): FriendGather => store.getters['chat/friendGather'])
-  const currentUserId = computed((): string => store.getters['app/user'])
+  // 当前用户，也就是我自己
+  const currentUser = computed((): User => store.getters['app/user'])
 
   watch(
     [groupGather, friendGather],
@@ -29,7 +30,7 @@ export const getChatArr = () => {
     // 此处避免Await造成v-for页面闪烁问题,所以在最后才赋值this.chatArr = roomArr;
     let roomArr = [...groups, ...friends]
     // 此处需要过滤本地已删除的会话
-    const deletedChat = (await minCache.get(`${currentUserId.value}-deletedChatId`)) as string[]
+    const deletedChat = (await minCache.get(`${currentUser.value}-deletedChatId`)) as string[]
     if (Array.isArray(deletedChat)) {
       roomArr = roomArr.filter((chat) => !deletedChat.includes((chat as Group).groupId || chat.userId))
     }
@@ -47,7 +48,7 @@ export const getChatArr = () => {
     })
 
     // 查看是否有需要置顶列表
-    const topChatId = (await minCache.get(`${currentUserId.value}-topChatId`)) as string
+    const topChatId = (await minCache.get(`${currentUser.value}-topChatId`)) as string
     if (topChatId) {
       // 找到需要置顶的窗口
       const chat = roomArr.find((c) => ((c as Group).groupId || c.userId) === topChatId)
@@ -67,5 +68,8 @@ export const getChatArr = () => {
   return {
     chatArr,
     sortChat,
+    groupGather,
+    friendGather,
+    currentUser,
   }
 }

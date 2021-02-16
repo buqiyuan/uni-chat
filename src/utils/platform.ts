@@ -90,3 +90,7 @@ function ifDefPlatform(): EPlatform {
 export const Platform: EPlatform = ifDefPlatform()
 /**默认导出平台类型*/
 export default Platform
+
+export const isH5 = Platform === EPlatform.H5
+export const isAppPlus = Platform === EPlatform.AppPlus
+export const isMpWeixin = Platform === EPlatform.MpWeixin

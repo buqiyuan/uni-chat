@@ -37,6 +37,7 @@
     "regenerator-runtime": "^0.13.7",
     "uni-read-pages": "^1.0.5",
     "uni-simple-router": "^2.0.0-beta.11",
+    "uview-ui": "^1.8.3",
     "vue": "^2.6.12",
     "vue-class-component": "^7.2.6",
     "vue-property-decorator": "^9.1.2",

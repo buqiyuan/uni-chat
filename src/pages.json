@@ -1,11 +1,7 @@
 {
-  //  "easycom": {
-  //    "autoscan": true,
-  //    "custom": {
-  //      // uni-ui 规则如下配置
-  //      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
-  //    }
-  //  },
+  "easycom": {
+    "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+  },
   "pages": [
     //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
     {
@@ -25,7 +21,7 @@
     },
     {
       "path": "pages/chat/chat",
-      "aliasPath": "/chat/:id",
+      "aliasPath": "/chat",
       "name": "chat",
       "style": {
         "app-plus": {

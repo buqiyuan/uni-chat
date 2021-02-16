@@ -44,12 +44,16 @@ export function isUrl(text: string) {
  * @param time
  */
 export function formatTime(time: number) {
-  // 大于昨天
-  if (dayjs().add(-1, 'days').startOf('day').millisecond() > time) {
+  // 大于前天
+  if (dayjs(time).add(2, 'day').isBefore(dayjs(), 'day')) {
     return dayjs(time).format('M/D HH:mm')
   }
+  // 大于昨天
+  if (dayjs(time).add(1, 'day').isBefore(dayjs(), 'day')) {
+    return `前天 ${dayjs(time).format('HH:mm')}`
+  }
   // 昨天
-  if (dayjs().startOf('day').millisecond() > time) {
+  if (dayjs(time).isBefore(dayjs(), 'day')) {
     return `昨天 ${dayjs(time).format('HH:mm')}`
   }
   // 大于五分钟不显示秒

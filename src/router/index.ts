@@ -2,6 +2,9 @@ import { RouterMount, createRouter, runtimeQuit, totalNextRoute } from 'uni-simp
 import { minCache } from '@/utils/MinCache'
 
 const router = createRouter({
+  h5: {
+    paramsToQuery: true,
+  },
   platform: process.env.VUE_APP_PLATFORM as any,
   routerErrorEach: ({ type, msg }) => {
     console.log({ type, msg })

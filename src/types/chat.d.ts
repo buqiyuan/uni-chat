@@ -15,6 +15,7 @@ interface Group {
   createTime: number
   isTop?: boolean // 是否置顶聊天
   members?: Friend[] // 群成员列表
+  [prop: string]: any
 }
 
 // 群与用户关联表
@@ -52,6 +53,7 @@ interface Friend {
   isTop?: boolean // 是否置顶聊天
   online?: 1 | 0 // 是否在线
   isManager?: 1 | 0 // 是否为群主
+  [prop: string]: any
 }
 
 // 用户与好友关联表
