@@ -1,1 +1,13 @@
-[{"normal":"/static/emojis/weixin/Addoil.png","active":"/static/emojis/weixin/Addoil.png"},{"normal":"/static/emojis/weixin/Cold.png","active":"/static/emojis/weixin/Cold.png"},{"normal":"/static/emojis/weixin/KeepFighting.png","active":"/static/emojis/weixin/KeepFighting.png"},{"normal":"/static/emojis/weixin/NoProb.png","active":"/static/emojis/weixin/NoProb.png"},{"normal":"/static/emojis/weixin/Shocked!.png","active":"/static/emojis/weixin/Shocked!.png"},{"normal":"/static/emojis/weixin/Slap.png","active":"/static/emojis/weixin/Slap.png"},{"normal":"/static/emojis/weixin/Social.png","active":"/static/emojis/weixin/Social.png"},{"normal":"/static/emojis/weixin/Sweat.png","active":"/static/emojis/weixin/Sweat.png"},{"normal":"/static/emojis/weixin/Watermelon.png","active":"/static/emojis/weixin/Watermelon.png"},{"normal":"/static/emojis/weixin/Wow!.png","active":"/static/emojis/weixin/Wow!.png"},{"normal":"/static/emojis/weixin/Yellowdog.png","active":"/static/emojis/weixin/Yellowdog.png"}]
+[
+  { "normal": "/static/emojis/weixin/Addoil.png", "active": "/static/emojis/weixin/Addoil.png" },
+  { "normal": "/static/emojis/weixin/Cold.png", "active": "/static/emojis/weixin/Cold.png" },
+  { "normal": "/static/emojis/weixin/KeepFighting.png", "active": "/static/emojis/weixin/KeepFighting.png" },
+  { "normal": "/static/emojis/weixin/NoProb.png", "active": "/static/emojis/weixin/NoProb.png" },
+  { "normal": "/static/emojis/weixin/Shocked!.png", "active": "/static/emojis/weixin/Shocked!.png" },
+  { "normal": "/static/emojis/weixin/Slap.png", "active": "/static/emojis/weixin/Slap.png" },
+  { "normal": "/static/emojis/weixin/Social.png", "active": "/static/emojis/weixin/Social.png" },
+  { "normal": "/static/emojis/weixin/Sweat.png", "active": "/static/emojis/weixin/Sweat.png" },
+  { "normal": "/static/emojis/weixin/Watermelon.png", "active": "/static/emojis/weixin/Watermelon.png" },
+  { "normal": "/static/emojis/weixin/Wow!.png", "active": "/static/emojis/weixin/Wow!.png" },
+  { "normal": "/static/emojis/weixin/Yellowdog.png", "active": "/static/emojis/weixin/Yellowdog.png" }
+]
