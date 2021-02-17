@@ -3,16 +3,12 @@
     <top-bar>
       <template #left>
         <view class="user-info">
-          <image
-            class="avatar"
-            src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-uni-app-doc/6c4e3a70-4f31-11eb-8ff1-d5dcf8779628.png"
-            @click="$emit('open-drawer')"
-          />
+          <image class="avatar" :src="apiUrl + currentUser.avatar" @click="$emit('open-drawer')" />
           <view class="desc">
-            <view class="nickname"> 猿计划 </view>
+            <view class="nickname"> {{ currentUser.username }} </view>
             <view class="network-status">
               <text class="status" />
-              手机在线-WIFI
+              手机在线-{{ networkType }}
             </view>
           </view>
         </view>
@@ -63,11 +59,13 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { defineComponent, reactive, toRefs, watchEffect, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watchEffect, ref, onMounted, computed } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
 import FriendItem from './friend-item.vue'
 import GroupItem from './group-item.vue'
-import { getChatArr } from './getChatArr'
+import { useChatData } from './useChatData'
+import { useNetworkStatus } from '@/hooks/useNetworkStatus'
+import store from '@/store'
 
 const options = [
   {
@@ -95,8 +93,11 @@ export default defineComponent({
       _freshing: false,
       currentActionKey: '', // 是否显示遮罩层，主要用于左滑打开swipe-action的时候禁止其他行为
     })
+    const apiUrl = computed(() => store.getters['app/apiUrl'])
+    // 获取用户网络类型
+    const { networkType } = useNetworkStatus()
     // 获取聊天信息列表
-    const { sortChat, chatArr } = getChatArr()
+    const { sortChat, chatArr, currentUser } = useChatData()
 
     // 获取消息项id
     const getMsgItemId = (chatItem: ChatItemType): string => chatItem.groupId || chatItem.userId
@@ -183,9 +184,12 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      apiUrl,
       chatArr,
       swipeActionShows,
+      networkType,
       options,
+      currentUser,
       contentClick,
       open,
       close,

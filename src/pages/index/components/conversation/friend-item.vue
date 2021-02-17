@@ -1,18 +1,18 @@
 <template>
   <view class="message-item" @tap="nav2chat">
-    <image class="message-logo" :lazy-load="true" :src="apiUrl + messageItem.avatar" />
+    <user-avatar class="message-logo" :data="messageItem" />
     <view class="message-body">
       <view class="message-head">
         <view class="message-title">
           {{ messageItem.username }}
         </view>
-        <view class="message-time">
+        <view v-if="lastMessage" class="message-time">
           {{ formatTime(lastMessage.time) }}
         </view>
       </view>
-      <view class="message-footer">
+      <view v-if="lastMessage" class="message-footer">
         <view class="new-message">
-          <rich-text :nodes="lastMessage.content"></rich-text>
+          <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
         </view>
         <view v-if="messageItem.unread" class="message-unread">
           {{ messageItem.unread }}
@@ -24,6 +24,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, SetupContext, computed, ref, watchEffect } from '@vue/composition-api'
+import UserAvatar from '@/components/user-avatar.vue'
 import { formatTime } from '@/utils/common'
 import store from '@/store'
 
@@ -33,6 +34,7 @@ interface IProps {
 
 export default defineComponent({
   name: 'FriendItem',
+  components: { UserAvatar },
   props: {
     messageItem: {
       type: Object as PropType<Friend>,
@@ -46,8 +48,6 @@ export default defineComponent({
     watchEffect(() => {
       lastMessage.value = props.messageItem.messages?.slice(-1)[0]
     })
-    // 服务器地址
-    const apiUrl = computed((): string => store.getters['app/apiUrl'])
     //TODO 最新的一条消息（APP端检测不到值的变化。。。）
     // const lastMessage = computed((): FriendMessage => props.messageItem?.messages?.slice(-1)[0] as FriendMessage)
 
@@ -62,7 +62,6 @@ export default defineComponent({
     }
 
     return {
-      apiUrl,
       lastMessage,
       nav2chat,
       formatTime,
@@ -111,6 +110,9 @@ export default defineComponent({
         font-size: rpx(28);
         color: #d3dae2;
         @include text-ellipsis();
+        .message-content {
+          display: inline-block;
+        }
       }
 
       .message-unread {

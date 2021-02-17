@@ -20,6 +20,12 @@ Vue.use(uView)
 // new App({
 //   store,
 // }).$mount()
+// console.log(process.env, 'process.env')
+// if (process.env.NODE_ENV == 'development') {
+//   Vue.config.devtools = true
+// } else {
+//   Vue.config.devtools = false
+// }
 ;(App as any).mpType = 'app'
 
 const app = new App({

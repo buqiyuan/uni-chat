@@ -10,14 +10,14 @@
         <view class="message-title">
           {{ messageItem.groupName }}
         </view>
-        <view class="message-time">
+        <view v-if="lastMessage" class="message-time">
           {{ formatTime(lastMessage.time) }}
         </view>
       </view>
-      <view class="message-footer">
+      <view v-if="lastMessage" class="message-footer">
         <view class="new-message">
           {{ lastMessage.username }}:
-          <rich-text :nodes="lastMessage.content"></rich-text>
+          <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
         </view>
         <view v-if="messageItem.unread" class="message-unread">
           {{ messageItem.unread }}
@@ -68,9 +68,9 @@ export default defineComponent({
     }
 
     return {
-      nav2chat,
       apiUrl,
       lastMessage,
+      nav2chat,
       formatTime,
     }
   },
@@ -126,6 +126,9 @@ export default defineComponent({
         font-size: rpx(28);
         color: #d3dae2;
         @include text-ellipsis();
+        .message-content {
+          display: inline-block;
+        }
       }
 
       .message-unread {

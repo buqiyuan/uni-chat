@@ -13,7 +13,5 @@ export function getGroupsByName(groupName: string) {
  * @param params
  */
 export async function getGroupMessages(params: PagingParams) {
-  return await minRequest.get('/group/groupMessages', {
-    params,
-  })
+  return await minRequest.get('/group/groupMessages', params)
 }

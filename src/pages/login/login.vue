@@ -54,6 +54,20 @@ export default defineComponent({
     const isEmpty = () => {
       return state.username.trim() == '' || state.password.trim() == ''
     }
+    // 登录/注册 成功后加载聊天信息
+    const loadChatData = async () => {
+      uni.showLoading({
+        title: '聊天数据加载中',
+      })
+      await store.dispatch('chat/connectSocket')
+      uni.hideLoading()
+      setTimeout(() => {
+        root.$Router.replace({
+          name: 'index',
+        })
+      })
+    }
+
     // 用户登录
     const login = async () => {
       if (isEmpty()) {
@@ -61,32 +75,24 @@ export default defineComponent({
       }
       state.loginLoading = true
       const { username, password } = state
-      console.log(username, password)
-      const data = await store.dispatch('app/login', { username, password }).finally(() => (state.loginLoading = false))
+      const user = { username, password }
+      const data = await store.dispatch('app/login', user).finally(() => (state.loginLoading = false))
       if (data) {
-        await store.dispatch('chat/connectSocket')
-        uni.showLoading({
-          title: '聊天信息加载中',
-        })
-        setTimeout(() => {
-          uni.hideLoading()
-          root.$Router.replace({
-            name: 'index',
-          })
-        }, 1000)
+        await loadChatData()
       }
     }
     // 注册用户
-    const register = () => {
+    const register = async () => {
       if (isEmpty()) {
         return uni.showToast({ title: '用户名或密码不能为空', icon: 'none' })
       }
       state.registerLoading = true
       const { username, password } = state
-      console.log(username, password)
-      setTimeout(() => {
-        state.registerLoading = false
-      }, 1000)
+      const user = { username, password, createTime: Date.now() }
+      const data = await store.dispatch('app/register', user).finally(() => (state.registerLoading = false))
+      if (data) {
+        await loadChatData()
+      }
     }
 
     return {

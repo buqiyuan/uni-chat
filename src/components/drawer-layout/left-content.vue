@@ -6,12 +6,9 @@
     <!--    用户信息start-->
     <view class="top-wrapper">
       <view class="user-info">
-        <image
-          class="avatar"
-          src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-uni-app-doc/6c4e3a70-4f31-11eb-8ff1-d5dcf8779628.png"
-        />
+        <image class="avatar" :src="apiUrl + currentUser.avatar" />
         <view class="user-desc">
-          <text class="nickname"> 猿计划 </text>
+          <text class="nickname"> {{ currentUser.username }} </text>
           <text class="level"> v1 </text>
           <text class="sign"> 没有过不去的，只有回不去的。没有过不去的，只有回不去的。 </text>
         </view>
@@ -51,18 +48,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import { funcList, toolBar } from './funcList'
+import store from '@/store'
 
 export default defineComponent({
   name: 'LeftContent',
   emits: ['close'],
   setup(_, { emit }) {
     const close = () => emit('close')
+    const currentUser = computed(() => store.getters['app/user'])
+    const apiUrl = computed(() => store.getters['app/apiUrl'])
 
     return {
       funcList,
       toolBar,
+      apiUrl,
+      currentUser,
       close,
     }
   },

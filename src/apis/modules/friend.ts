@@ -7,7 +7,5 @@ import minRequest from '@/utils/request'
 
 export async function getFriendMessage(params: PagingParams) {
   // eslint-disable-next-line no-return-await
-  return await minRequest.get('/friend/friendMessages', {
-    params,
-  })
+  return await minRequest.get('/friend/friendMessages', params)
 }

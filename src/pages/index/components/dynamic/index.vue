@@ -3,11 +3,7 @@
     <top-bar>
       <template #left>
         <view class="user-info">
-          <image
-            class="avatar"
-            src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-uni-app-doc/6c4e3a70-4f31-11eb-8ff1-d5dcf8779628.png"
-            @click="$emit('open-drawer')"
-          />
+          <image class="avatar" :src="apiUrl + currentUser.avatar" @click="$emit('open-drawer')" />
           <view class="desc">
             <view class="network-status">
               <text class="status" />
@@ -27,12 +23,20 @@
   </view>
 </template>
 
-<script>
+<script lang="ts">
 import TopBar from '@/components/top-bar/index.vue'
+import { computed } from '@vue/composition-api'
+import store from '@/store'
 
 export default {
   name: 'Dynamic',
   components: { TopBar },
+  setup() {
+    const apiUrl = computed(() => store.getters['app/apiUrl'])
+    const currentUser = computed(() => store.getters['app/user'])
+
+    return { apiUrl, currentUser }
+  },
 }
 </script>
 

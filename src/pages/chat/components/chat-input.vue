@@ -41,7 +41,7 @@ import { isH5 } from '@/utils/platform'
 export default defineComponent({
   name: 'ChatInput',
   components: { ChatInputTools },
-  setup(_, { refs, root }) {
+  setup(_, { emit, root }) {
     const state = reactive({
       emoji: '', // 选择表情
       message: '',
@@ -83,7 +83,7 @@ export default defineComponent({
 
     // 输入文本
     const changeText = (e) => {
-      state.message = e.detail.html
+      state.message = e.detail?.html || ''
       // state.message = inputBoxRef.value!.$el.innerHTML
     }
     function onEditorReady() {
@@ -109,9 +109,9 @@ export default defineComponent({
     // 发送消息之前做一些处理校验
     const preSendMessage = () => {
       state.editorContext.getContents({
-        success: (res) => {
+        success: async (res) => {
           const text = res.html
-          console.log(text, '将要发送的文本消息，这里用的是富文本')
+          // console.log(text, '将要发送的文本消息，这里用的是富文本')
           if (text.trim().length < 12) {
             console.log('不能发送空消息!')
             // uni.showToast('不能发送空消息!')
@@ -119,11 +119,12 @@ export default defineComponent({
           }
 
           if (chatType === 'group') {
-            sendMessage({ type: 'group', message: text, messageType: 'text' })
+            await sendMessage({ type: 'group', message: text, messageType: 'text' })
           } else {
-            sendMessage({ type: 'friend', message: text, messageType: 'text' })
+            await sendMessage({ type: 'friend', message: text, messageType: 'text' })
           }
           state.editorContext.clear({})
+          emit('send-message')
         },
       })
     }

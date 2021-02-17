@@ -2,25 +2,25 @@
   <view>
     <view class="chat-input-tools">
       <view class="input-tools">
-        <view v-for="iconItem in toolIcons" :key="iconItem" @tap="tapTool(iconItem)">
-          <icon-font :icon="iconItem" :class="{ active: iconItem === currentToolName }" />
+        <view v-for="iconItem in toolIcons" :key="iconItem.iconName" @tap="tapTool(iconItem)">
+          <icon-font :icon="iconItem.iconName" :class="{ active: iconItem.iconName === currentToolName }" />
         </view>
       </view>
-      <view v-if="isMounted" class="panel" :class="{ opened: isOpenTools }" @tap="hideKeyboard">
-        <Speech v-show="currentToolName === toolIcons[0]" />
-        <Photo v-show="currentToolName === toolIcons[1]" />
-        <Photograph v-show="currentToolName === toolIcons[2]" />
-        <RedPacket v-show="currentToolName === toolIcons[3]" />
-        <Emoji v-show="currentToolName === toolIcons[4]" />
-        <Other v-show="currentToolName === toolIcons[5]" />
+      <view class="panel" :class="{ opened: isOpenTools }" @tap="hideKeyboard">
+        <Speech v-if="toolIcons[0].isShow" v-show="currentToolName === toolIcons[0].iconName" />
+        <Photo v-if="toolIcons[1].isShow" v-show="currentToolName === toolIcons[1].iconName" />
+        <Photograph v-if="toolIcons[2].isShow" v-show="currentToolName === toolIcons[2].iconName" />
+        <RedPacket v-if="toolIcons[3].isShow" v-show="currentToolName === toolIcons[3].iconName" />
+        <Emoji v-if="toolIcons[4].isShow" v-show="currentToolName === toolIcons[4].iconName" />
+        <Other v-if="toolIcons[5].isShow" v-show="currentToolName === toolIcons[5].iconName" />
       </view>
     </view>
   </view>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs, watch, PropType } from '@vue/composition-api'
-import { EPlatform, Platform } from '@/utils/platform'
+import { defineComponent, reactive, toRefs, watch, PropType } from '@vue/composition-api'
+import { isAppPlus } from '@/utils/platform'
 import Speech from '@/components/chat-input-tools/components/speech/index.vue'
 import Photo from '@/components/chat-input-tools/components/photo/index.vue'
 import Photograph from '@/components/chat-input-tools/components/photograph/index.vue'
@@ -29,7 +29,37 @@ import Emoji from '@/components/chat-input-tools/components/emoji/Emoji.vue'
 import Other from '@/components/chat-input-tools/components/other-tools/index.vue'
 import { IProps } from './types'
 
-const toolIcons = ['icon-yuyin', 'icon-tupian', 'icon-Camera1', 'icon-hongbao', 'icon-biaoqingjihuo', 'icon-add1']
+type ToolIconItem = {
+  iconName: string
+  isShow: boolean
+}
+
+const toolIcons: ToolIconItem[] = [
+  {
+    iconName: 'icon-yuyin',
+    isShow: false,
+  },
+  {
+    iconName: 'icon-tupian',
+    isShow: false,
+  },
+  {
+    iconName: 'icon-Camera1',
+    isShow: false,
+  },
+  {
+    iconName: 'icon-hongbao',
+    isShow: false,
+  },
+  {
+    iconName: 'icon-biaoqingjihuo',
+    isShow: false,
+  },
+  {
+    iconName: 'icon-add1',
+    isShow: false,
+  },
+]
 
 export default defineComponent({
   name: 'ChatInputTools',
@@ -48,7 +78,7 @@ export default defineComponent({
   setup(props: IProps, { emit }) {
     const state = reactive({
       currentToolName: '',
-      isMounted: false,
+      toolIcons,
     })
 
     // 关闭工具面板时，取消选中图标
@@ -61,8 +91,9 @@ export default defineComponent({
       }
     )
 
-    const tapTool = (iconName: string) => {
-      if (iconName == 'icon-Camera1' && Platform === EPlatform.AppPlus) {
+    const tapTool = (iconItem: ToolIconItem) => {
+      iconItem.isShow = true
+      if (iconItem.iconName == 'icon-Camera1' && isAppPlus) {
         return uni.chooseImage({
           sourceType: ['camera'],
           sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
@@ -79,9 +110,8 @@ export default defineComponent({
         })
       }
       // 是否已经点击过了
-      const isTaped = state.currentToolName === iconName
-      state.currentToolName = isTaped ? '' : iconName
-      state.isMounted = true
+      const isTaped = state.currentToolName === iconItem.iconName
+      state.currentToolName = isTaped ? '' : iconItem.iconName
       emit('changeModel', !isTaped)
       uni.hideKeyboard()
     }
@@ -90,15 +120,8 @@ export default defineComponent({
       uni.hideKeyboard()
     }
 
-    onMounted(() => {
-      setTimeout(() => {
-        state.isMounted = true
-      }, 3000)
-    })
-
     return {
       ...toRefs(state),
-      toolIcons,
       hideKeyboard,
       tapTool,
     }

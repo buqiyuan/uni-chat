@@ -5,7 +5,7 @@ import { minCache } from '@/utils/MinCache'
 /**
  * @description 获取聊天信息列表
  */
-export const getChatArr = () => {
+export const useChatData = () => {
   const chatArr = ref<Array<Group | Friend>>([])
 
   const groupGather = computed((): GroupGather => store.getters['chat/groupGather'])
@@ -67,9 +67,9 @@ export const getChatArr = () => {
 
   return {
     chatArr,
-    sortChat,
     groupGather,
     friendGather,
     currentUser,
+    sortChat,
   }
 }

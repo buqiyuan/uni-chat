@@ -1,4 +1,4 @@
-import { ResponseResult } from '@/utils/request/types'
+// import { ResponseResult } from '@/utils/request/types'
 import dayjs from 'dayjs'
 
 // 处理所有后端返回的数据

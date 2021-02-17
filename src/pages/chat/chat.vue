@@ -7,7 +7,9 @@
         </navigator>
       </template>
       <template #middle>
-        <text class="top-bar-title">{{ currentChatItem.username || currentChatItem.groupName }}</text>
+        <view :data-status="onlineStatus" class="chat-title">
+          <text class="title">{{ currentChatItem.username || currentChatItem.groupName }}</text>
+        </view>
       </template>
       <template #right>
         <view class="tools">
@@ -17,6 +19,7 @@
     </top-bar>
     <!--    聊天消息列表-->
     <scroll-view
+      v-if="isMounted"
       :scroll-into-view="msgId"
       :style="{ '--message-scroll-height': tabBarRect.height + chatInputRect.height + 'px' }"
       show-scrollbar
@@ -24,6 +27,8 @@
       class="message-list"
       @scrolltoupper="scrolltoupper"
     >
+      <view v-if="isNoMore" class="no-more">都被你看光了，再翻也没有啦~</view>
+      <image v-show="spinning" class="loading-icon" src="/static/status.gif"></image>
       <template v-for="msgItem in currentChatItem.messages">
         <view
           :id="`msgItem-${msgItem._id}`"
@@ -31,9 +36,9 @@
           :class="{ 'my-self': isMe(msgItem) }"
           class="message-item"
         >
-          <image class="avatar" :src="apiUrl + (isMe(msgItem) ? currentUser.avatar : currentChatItem.avatar)"></image>
+          <user-avatar :data="msgItem" class="avatar" />
           <view class="message-body">
-            <view class="username">{{ isMe(msgItem) ? currentUser.username : currentChatItem.username }}</view>
+            <view class="username">{{ isMe(msgItem) ? currentUser.username : msgItem.username }}</view>
             <view class="bubble">
               <rich-text class="talk" :nodes="msgItem.content"></rich-text>
               <!--              <view class="talk" v-html="msgItem.content"></view>-->
@@ -43,27 +48,54 @@
       </template>
     </scroll-view>
     <!--    聊天输入框-->
-    <chat-input />
+    <chat-input @send-message="scroll2bottom" />
   </view>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed, nextTick, SetupContext } from '@vue/composition-api'
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  Data,
+  computed,
+  onMounted,
+  nextTick,
+  SetupContext,
+} from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
 import ChatInput from './components/chat-input.vue'
+import UserAvatar from '@/components/user-avatar.vue'
+import * as api from '@/apis'
 import store from '@/store'
 import { useClientRect } from '@/hooks/useClientRect'
-import { getChatArr } from '@/pages/index/components/conversation/getChatArr'
+import { useChatData } from '../index/components/conversation/useChatData'
+import { processReturn } from '@/utils/common'
+
+interface IState extends Data {
+  title: string
+  msgId: string
+  pageSize: number
+  isNoMore: boolean
+  spinning: boolean // 加载历史消息loading
+  isMounted: boolean // 静态dom是否渲染完成,避免由等待聊天数据列表渲染而造成的短暂白屏
+  currentChatId: string // 当前聊天对象的id
+  currentChatKey: 'groupId' | 'userId' // 当前聊天对象id的key名称
+}
 
 export default defineComponent({
   name: 'Chat',
-  components: { TopBar, ChatInput },
+  components: { TopBar, ChatInput, UserAvatar },
   setup(_, { root }: SetupContext) {
     const { id, chatType } = root.$Route.query
     console.log(root.$Route.query, 'ctx.root.$Route.query')
-    const state = reactive({
+    const state: IState = reactive({
       title: '',
       msgId: '',
+      pageSize: 10,
+      isNoMore: false,
+      spinning: false,
+      isMounted: false, // 静态dom是否渲染完成,避免由等待聊天数据列表渲染而造成的短暂白屏
       currentChatId: id, // 当前聊天对象的id
       currentChatKey: chatType == 'group' ? 'groupId' : 'userId', // 当前聊天对象id的key名称
     })
@@ -71,9 +103,19 @@ export default defineComponent({
     const tabBarRect = useClientRect('.top-bar')
     const chatInputRect = useClientRect('.chat-input')
 
-    const apiUrl = computed(() => store.getters['app/apiUrl'])
+    const userGather = computed((): FriendGather => store.getters['chat/userGather'])
+    // 群聊或用户的在线状态
+    const onlineStatus = computed(() => {
+      if (chatType == 'group') {
+        const keys = Object.keys(userGather.value)
+        const onlineUsers = keys.filter((key) => userGather.value[key].online == 0).length
+        return `${onlineUsers}/${keys.length}人在线`
+      } else {
+        return userGather.value[state.currentChatId].online == 0 ? '手机在线-WIFI' : '离线'
+      }
+    })
 
-    const { groupGather, friendGather, currentUser } = getChatArr()
+    const { groupGather, friendGather, currentUser } = useChatData()
 
     // 当前聊天对象
     const currentChatItem = computed((): Friend | Group | any => {
@@ -85,29 +127,108 @@ export default defineComponent({
       }
       return {}
     })
+    // 消息滚动到底部
+    const scroll2bottom = () => (state.msgId = `msgItem-${currentChatItem.value.messages?.slice(-1)[0]._id}`)
 
-    nextTick(async () => {
-      state.msgId = `msgItem-${currentChatItem.value.messages?.slice(-1)[0]._id}`
+    onMounted(() => {
+      state.isMounted = true
+      nextTick(() => {
+        setTimeout(scroll2bottom, 200)
+      })
     })
 
     // 小丑竟是我自己？
-    const isMe = (msgItem: GroupMessage | FriendMessage) => {
-      return currentUser.value.userId == msgItem.userId
+    const isMe = computed(() => {
+      return (msgItem: GroupMessage | FriendMessage) => currentUser.value.userId == msgItem.userId
+    })
+    /**
+     * 获取群聊消息
+     */
+    const getGroupMessages = async () => {
+      const current = currentChatItem.value.messages.length
+      const currentMessage = currentChatItem.value.messages ?? []
+      const data: PagingResponse = processReturn(
+        await api.getGroupMessages({
+          groupId: state.currentChatId,
+          userId: currentUser.value.userId,
+          current,
+          pageSize: state.pageSize,
+        })
+      )
+      if (data) {
+        if (!data.messageArr.length || data.messageArr.length < state.pageSize) {
+          state.isNoMore = true
+        }
+        // this.needScrollToBottom = false
+        store.commit('chat/set_group_messages', [...data.messageArr, ...currentMessage])
+        // eslint-disable-next-line no-restricted-syntax
+        for (const user of data.userArr) {
+          if (!userGather.value[user.userId]) {
+            store.commit('chat/set_user_gather', user)
+          }
+        }
+      }
+    }
+
+    /**
+     * 获取私聊消息
+     */
+    const getFriendMessages = async () => {
+      const { userId } = currentUser.value
+      const friendId = state.currentChatId
+      const current = currentChatItem.value.messages.length
+      const currentMessage = currentChatItem.value.messages ?? []
+      const data: PagingResponse = processReturn(
+        await api.getFriendMessage({
+          userId,
+          friendId,
+          current,
+          pageSize: state.pageSize,
+        })
+      )
+      if (data) {
+        if (!data.messageArr.length || data.messageArr.length < state.pageSize) {
+          state.isNoMore = true
+        }
+        // this.needScrollToBottom = false
+        store.commit('chat/set_friend_messages', [...data.messageArr, ...currentMessage])
+      }
+    }
+
+    /**
+     * 获取历史消息
+     * @params text
+     */
+    const getMoreMessage = async () => {
+      if (state.isNoMore) {
+        return false
+      }
+      state.spinning = true
+      if (state.currentChatKey === 'groupId') {
+        await getGroupMessages()
+      } else {
+        await getFriendMessages()
+      }
+      nextTick(() => {
+        state.spinning = false
+      })
     }
 
     // 下滑快到顶部的时候，加载历史消息
     const scrolltoupper = () => {
-      console.log('到顶了')
+      getMoreMessage()
     }
 
     return {
       ...toRefs(state),
-      apiUrl,
       currentUser,
       currentChatItem,
       tabBarRect,
       chatInputRect,
       isMe,
+      userGather,
+      onlineStatus,
+      scroll2bottom,
       scrolltoupper,
     }
   },
@@ -118,12 +239,41 @@ export default defineComponent({
 .chat-room ::v-deep {
   height: 100%;
   background-color: #eaedf4;
-  .top-bar-title {
+  .chat-title {
     @include position-center;
-    @include text-ellipsis(1);
+    text-align: center;
+    &::after {
+      content: attr(data-status);
+      position: absolute;
+      top: rpx(40);
+      left: 50%;
+      transform: translateX(-50%);
+      word-break: keep-all;
+      white-space: nowrap;
+      font-size: rpx(20);
+    }
+    .title {
+      @include text-ellipsis(1);
+    }
   }
+
   .message-list {
     height: calc(100vh - var(--message-scroll-height));
+    .no-more {
+      text-align: center;
+      line-height: rpx(100);
+      color: #9d9d9d;
+    }
+
+    .loading-icon {
+      display: block;
+      border-radius: 100%;
+      padding: rpx(10);
+      margin: rpx(20) auto;
+      height: rpx(30);
+      width: rpx(30);
+      box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.1) inset;
+    }
 
     .message-item {
       display: flex;
@@ -138,10 +288,6 @@ export default defineComponent({
         .username {
           text-align: right;
         }
-      }
-      .avatar {
-        @include el-to-circle(80);
-        background-color: white;
       }
       .message-body {
         position: relative;
