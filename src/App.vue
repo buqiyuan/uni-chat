@@ -5,6 +5,7 @@ import { SET_KEYBOARD_HEIGHT } from '@/store/modules/app/mutation-types'
 export default Vue.extend({
   mpType: 'app',
   onLaunch() {
+    console.log(process.env)
     setTimeout(() => {
       const userId = this.$store.getters['app/user'].userId
       console.log(userId, 'userId')
@@ -20,6 +21,9 @@ export default Vue.extend({
       }
       console.log(this.$store.state.app.keyboardHeight)
     })
+  },
+  onBackPress() {
+    console.log('点击了返回键')
   },
 })
 </script>

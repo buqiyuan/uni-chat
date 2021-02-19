@@ -33,10 +33,11 @@
 </template>
 
 <script>
-import { defineComponent, reactive, toRefs, computed, ref, provide } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, provide } from '@vue/composition-api'
 import ChatInputTools from '@/components/chat-input-tools/index.vue'
 import { useSendMessage } from './useSendMessage'
 import { isH5 } from '@/utils/platform'
+import { webSite } from '@/common/constant'
 
 export default defineComponent({
   name: 'ChatInput',
@@ -48,13 +49,13 @@ export default defineComponent({
       isOpenTools: false, // 是否打开工具面板
       editorContext: null, // 文本框对象
     })
-    const { chatType, id } = root.$Route.query
+    const { chatType } = root.$Route.query
 
     const { sendMessage } = useSendMessage()
 
     // 设置表情
     provide('set-emoji', (emoji) => {
-      state.emoji = `<img width="20" height="20" src="/uni-chat${emoji}">`
+      state.emoji = `<img width="20" height="20" src="${webSite}${emoji}">`
     })
 
     const onBlur = () => {
@@ -112,7 +113,7 @@ export default defineComponent({
         success: async (res) => {
           const text = res.html
           // console.log(text, '将要发送的文本消息，这里用的是富文本')
-          if (text.trim().length < 12) {
+          if (text.trim().length < 8) {
             console.log('不能发送空消息!')
             // uni.showToast('不能发送空消息!')
             return

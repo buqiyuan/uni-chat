@@ -75,6 +75,13 @@ export default defineComponent({
       default: false,
     },
   },
+  onBackPress() {
+    console.log('点击了返回键')
+    if (this.isOpenTools) {
+      this.$emit('changeModel', false)
+      return true
+    }
+  },
   setup(props: IProps, { emit }) {
     const state = reactive({
       currentToolName: '',
@@ -91,11 +98,12 @@ export default defineComponent({
       }
     )
 
+    // 点击工具面板图标
     const tapTool = (iconItem: ToolIconItem) => {
       iconItem.isShow = true
       if (iconItem.iconName == 'icon-Camera1' && isAppPlus) {
         return uni.chooseImage({
-          sourceType: ['camera'],
+          sourceType: ['album'],
           sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
           success: (res) => {
             for (let i = 0; i < res.tempFilePaths.length; i++) {
@@ -109,7 +117,7 @@ export default defineComponent({
           },
         })
       }
-      // 是否已经点击过了
+      // 是否已经点击过了，重复点击则收起
       const isTaped = state.currentToolName === iconItem.iconName
       state.currentToolName = isTaped ? '' : iconItem.iconName
       emit('changeModel', !isTaped)

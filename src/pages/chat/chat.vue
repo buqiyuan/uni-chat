@@ -38,7 +38,9 @@
         >
           <user-avatar :data="msgItem" class="avatar" />
           <view class="message-body">
-            <view class="username">{{ isMe(msgItem) ? currentUser.username : msgItem.username }}</view>
+            <view class="username">{{
+              isMe(msgItem) ? currentUser.username : userGather[msgItem.userId].username
+            }}</view>
             <view class="bubble">
               <rich-text class="talk" :nodes="msgItem.content"></rich-text>
               <!--              <view class="talk" v-html="msgItem.content"></view>-->
@@ -48,7 +50,7 @@
       </template>
     </scroll-view>
     <!--    聊天输入框-->
-    <chat-input @send-message="scroll2bottom" />
+    <chat-input @send-message="onSendMessage" />
   </view>
 </template>
 
@@ -59,6 +61,7 @@ import {
   toRefs,
   Data,
   computed,
+  onUnmounted,
   onMounted,
   nextTick,
   SetupContext,
@@ -109,7 +112,7 @@ export default defineComponent({
       if (chatType == 'group') {
         const keys = Object.keys(userGather.value)
         const onlineUsers = keys.filter((key) => userGather.value[key].online == 0).length
-        return `${onlineUsers}/${keys.length}人在线`
+        return `${onlineUsers}人在线`
       } else {
         return userGather.value[state.currentChatId].online == 0 ? '手机在线-WIFI' : '离线'
       }
@@ -128,13 +131,26 @@ export default defineComponent({
       return {}
     })
     // 消息滚动到底部
-    const scroll2bottom = () => (state.msgId = `msgItem-${currentChatItem.value.messages?.slice(-1)[0]._id}`)
+    const scroll2bottom = () => {
+      state.msgId = ''
+      nextTick(() => {
+        state.msgId = `msgItem-${currentChatItem.value.messages?.slice(-1)[0]._id}`
+      })
+    }
+    // 监听子组件发送消息
+    const onSendMessage = () => {
+      setTimeout(scroll2bottom, 500)
+    }
 
     onMounted(() => {
       state.isMounted = true
-      nextTick(() => {
-        setTimeout(scroll2bottom, 200)
-      })
+      const timer = setTimeout(() => {
+        if (currentChatItem.value.messages) {
+          setTimeout(scroll2bottom)
+          clearTimeout(timer)
+        }
+      }, 100)
+      onUnmounted(() => clearTimeout(timer))
     })
 
     // 小丑竟是我自己？
@@ -228,6 +244,7 @@ export default defineComponent({
       isMe,
       userGather,
       onlineStatus,
+      onSendMessage,
       scroll2bottom,
       scrolltoupper,
     }
@@ -258,6 +275,7 @@ export default defineComponent({
   }
 
   .message-list {
+    overflow-anchor: none;
     height: calc(100vh - var(--message-scroll-height));
     .no-more {
       text-align: center;

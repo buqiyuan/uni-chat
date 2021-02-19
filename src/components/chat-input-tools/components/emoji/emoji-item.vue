@@ -9,6 +9,7 @@
             webp
             :src="item.normal"
             @tap="selectEmoji(item)"
+            @touchend="previewEmoji = ''"
             @longpress="longPress(item)"
           />
           <view v-if="previewEmoji === item.active" class="emoji-preview">
@@ -23,6 +24,7 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watch, inject, PropType } from '@vue/composition-api'
 import { IProps, EmojiItem } from './types'
+import { log } from 'util'
 
 export default defineComponent({
   name: 'EmojiItem',
