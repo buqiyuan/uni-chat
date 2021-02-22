@@ -28,7 +28,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, toRefs } from '@vue/composition-api'
 import DrawerLayout from '@/components/drawer-layout/index.vue'
-import TabBar from './tab-bar.vue'
+import TabBar from './components/tab-bar.vue'
 import Conversation from './components/conversation/index.vue'
 import Contact from './components/contact/index.vue'
 import LookPoint from './components/look-point/index.vue'

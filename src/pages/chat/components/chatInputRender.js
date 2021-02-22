@@ -14,13 +14,13 @@ export default {
       const selection = getSelection()
       // 设置最后光标对象
       this.lastEditRange = selection.getRangeAt(0)
-      console.log(this.lastEditRange, '最后的光标位置')
+      // console.log(this.lastEditRange, '最后的光标位置')
     },
     // 发送数据到逻辑层
     receiveEmoji(newValue, oldValue, ownerVm, vm) {
       const editorEl = document.querySelector('#input-box .ql-editor')
       const selection = window?.getSelection() ?? document.getSelection()
-      editorEl.focus()
+      // editorEl.focus()
       if (this.lastEditRange) {
         // 存在最后光标对象，选定对象清除所有光标并添加最后光标还原之前的状态
         selection.removeAllRanges()
@@ -32,9 +32,9 @@ export default {
       let hasR_lastChild = hasR.lastChild
       while (
         hasR_lastChild &&
-        hasR_lastChild.nodeName.toLowerCase() == 'br' &&
+        hasR_lastChild.nodeName.toLowerCase() === 'br' &&
         hasR_lastChild.previousSibling &&
-        hasR_lastChild.previousSibling.nodeName.toLowerCase() == 'br'
+        hasR_lastChild.previousSibling.nodeName.toLowerCase() === 'br'
       ) {
         const e = hasR_lastChild
         hasR_lastChild = hasR_lastChild.previousSibling

@@ -36,6 +36,8 @@
     "navigationBarTitleText": "uni-app",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8",
+    "rpxCalcMaxDeviceWidth": 960, // rpx 计算所支持的最大设备宽度，单位 px，默认值为 960
+    "rpxCalcBaseDeviceWidth": 375, // 设备实际宽度超出 rpx 计算所支持的最大宽度时，rpx计算所采用的固定屏幕宽度，单位 px，默认值为 375
     "app-plus": {
       "bounce": "none",
       "scrollIndicator": "none" // 不显示滚动条

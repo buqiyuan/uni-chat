@@ -4,6 +4,7 @@ import { minCache } from '@/utils/MinCache'
 const router = createRouter({
   h5: {
     paramsToQuery: true,
+    vueRouterDev: false, //完全使用vue-router开发 默认 false
   },
   platform: process.env.VUE_APP_PLATFORM as any,
   routerErrorEach: ({ type, msg }) => {

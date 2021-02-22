@@ -9,9 +9,8 @@
           :change:emoji="renderScript.receiveEmoji"
           @input="changeText"
           @ready="onEditorReady"
-          @focus.prevent="onfocus"
+          @focus.prevent="renderScript.getCursorPosition"
           @touchstart="showKeyboard"
-          @tap="renderScript.getCursorPosition"
         >
         </editor>
         <button
@@ -77,9 +76,9 @@ export default defineComponent({
 
     // 显示键盘并关闭面板
     const showKeyboard = () => {
-      if (!isH5) {
-        closePanel()
-      }
+      // if (!isH5) {
+      closePanel()
+      // }
     }
 
     // 输入文本

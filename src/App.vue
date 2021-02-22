@@ -5,12 +5,16 @@ import { SET_KEYBOARD_HEIGHT } from '@/store/modules/app/mutation-types'
 export default Vue.extend({
   mpType: 'app',
   onLaunch() {
-    console.log(process.env)
-    setTimeout(() => {
+    // console.log(process.env)
+    setTimeout(async () => {
       const userId = this.$store.getters['app/user'].userId
       console.log(userId, 'userId')
       if (userId) {
-        this.$store.dispatch('chat/connectSocket')
+        await this.$store.dispatch('chat/connectSocket')
+        console.log(this.$Route?.name, 'this.$Route?.name')
+        if (this.$Route?.name == 'login') {
+          this.$Router.replace({ name: 'index' })
+        }
       } else if (this.$Route?.name != 'login') {
         this.$Router.replace({ name: 'login' })
       }
@@ -29,8 +33,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-@import 'uview-ui/theme.scss';
-@import 'uview-ui/index.scss';
+@import '~uview-ui/theme.scss';
+@import '~uview-ui/index.scss';
 /* 每个页面公共css */
 @import 'styles/iconfont.css';
 @import '~@/styles/common.scss';

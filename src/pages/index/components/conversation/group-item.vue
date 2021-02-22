@@ -44,7 +44,7 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props: IProps, ctx: SetupContext) {
+  setup(props: IProps, { root }: SetupContext) {
     console.log(props.messageItem, 'group-item')
     const lastMessage = ref<GroupMessage>()
 
@@ -58,7 +58,7 @@ export default defineComponent({
     // const lastMessage = computed((): GroupMessage => props.messageItem.messages?.slice(-1)[0] as GroupMessage)
 
     const nav2chat = () => {
-      ctx.root.$Router.push({
+      root.$Router.push({
         name: 'chat',
         params: {
           id: props.messageItem.groupId,

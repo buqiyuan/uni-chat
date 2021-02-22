@@ -26,7 +26,6 @@
 import { defineComponent, PropType, SetupContext, computed, ref, watchEffect } from '@vue/composition-api'
 import UserAvatar from '@/components/user-avatar.vue'
 import { formatTime } from '@/utils/common'
-import store from '@/store'
 
 interface IProps {
   messageItem: Friend

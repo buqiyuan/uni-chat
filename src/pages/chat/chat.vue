@@ -275,6 +275,7 @@ export default defineComponent({
   }
 
   .message-list {
+    content-visibility: auto;
     overflow-anchor: none;
     height: calc(100vh - var(--message-scroll-height));
     .no-more {
