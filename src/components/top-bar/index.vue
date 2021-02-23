@@ -15,21 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect, onMounted } from '@vue/composition-api'
-import { useClientRect } from '@/hooks/useClientRect'
-import { SET_TAB_BAR_HEIGHT } from '@/store/modules/app/mutation-types'
-import store from '@/store'
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   name: 'TopBar',
   setup(_, { root }) {
-    onMounted(async () => {
-      const clientRect = await useClientRect('.top-bar')
-      watchEffect(() => {
-        store.commit(`app/${SET_TAB_BAR_HEIGHT}`, clientRect.value?.height)
-      })
-    })
-
     return {}
   },
 })

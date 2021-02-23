@@ -111,10 +111,10 @@ export default defineComponent({
     const onlineStatus = computed(() => {
       if (chatType == 'group') {
         const keys = Object.keys(userGather.value)
-        const onlineUsers = keys.filter((key) => userGather.value[key].online == 0).length
+        const onlineUsers = keys.filter((key) => userGather.value[key].online == 1).length
         return `${onlineUsers}人在线`
       } else {
-        return userGather.value[state.currentChatId].online == 0 ? '手机在线-WIFI' : '离线'
+        return userGather.value[state.currentChatId].online == 1 ? '手机在线-WIFI' : '离线'
       }
     })
 
@@ -275,7 +275,7 @@ export default defineComponent({
   }
 
   .message-list {
-    content-visibility: auto;
+    //content-visibility: auto;
     overflow-anchor: none;
     height: calc(100vh - var(--message-scroll-height));
     .no-more {

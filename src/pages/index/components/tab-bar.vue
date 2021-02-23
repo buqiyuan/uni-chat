@@ -18,9 +18,6 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watchEffect } from '@vue/composition-api'
-import store from '@/store'
-import { SET_TAB_BAR_HEIGHT } from '@/store/modules/app/mutation-types'
-import { useClientRect } from '@/hooks/useClientRect'
 
 interface TabItem {
   title: string
@@ -58,14 +55,6 @@ export default defineComponent({
       active: tabs[0].compName,
       tabBarHeight: 0,
     })
-
-    ~(async () => {
-      const clientRect = await useClientRect('.tab-bar')
-
-      watchEffect(() => {
-        store.commit(`app/${SET_TAB_BAR_HEIGHT}`, clientRect.value?.height)
-      })
-    })()
 
     // 获取图片路径
     const getImageFullPath = (tabItem: TabItem) => {

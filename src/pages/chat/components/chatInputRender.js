@@ -1,3 +1,5 @@
+import { isH5 } from '@/utils/platform'
+
 export default {
   data() {
     return {
@@ -19,8 +21,10 @@ export default {
     // 发送数据到逻辑层
     receiveEmoji(newValue, oldValue, ownerVm, vm) {
       const editorEl = document.querySelector('#input-box .ql-editor')
-      const selection = window?.getSelection() ?? document.getSelection()
-      // editorEl.focus()
+      const selection = window.getSelection ? window.getSelection() : document.getSelection()
+      if (isH5) {
+        editorEl.focus()
+      }
       if (this.lastEditRange) {
         // 存在最后光标对象，选定对象清除所有光标并添加最后光标还原之前的状态
         selection.removeAllRanges()

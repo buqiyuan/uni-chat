@@ -76,9 +76,9 @@ export default defineComponent({
 
     // 显示键盘并关闭面板
     const showKeyboard = () => {
-      // if (!isH5) {
-      closePanel()
-      // }
+      if (!isH5) {
+        closePanel()
+      }
     }
 
     // 输入文本

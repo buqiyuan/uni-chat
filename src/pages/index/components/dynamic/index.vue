@@ -3,7 +3,7 @@
     <top-bar>
       <template #left>
         <view class="user-info">
-          <image class="avatar" :src="apiUrl + currentUser.avatar" @click="$emit('open-drawer')" />
+          <image class="avatar" :src="apiUrl + currentUser.avatar" @tap="$emit('open-drawer')" />
           <view class="desc">
             <view class="network-status">
               <text class="status" />
@@ -30,6 +30,7 @@ import store from '@/store'
 
 export default {
   name: 'Dynamic',
+  emits: ['open-drawer'],
   components: { TopBar },
   setup() {
     const apiUrl = computed(() => store.getters['app/apiUrl'])

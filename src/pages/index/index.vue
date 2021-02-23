@@ -3,7 +3,7 @@
     ref="drawerLayoutRef"
     v-model="isOpen"
     :disabled="isDisabledSlide"
-    :style="{ '--body-height': bodyHeight }"
+    :style="{ '--body-height': `calc(100vh - ${tabBarRect.height + topBarRect.height}px)` }"
   >
     <template #right>
       <!--      动态组件--可惜不支持 -->
@@ -15,24 +15,25 @@
         @open-drawer="isOpen = true"
       />
       <!--      联系人列表-->
-      <contact v-show="compName === 'contact'" />
+      <contact v-show="compName === 'contact'" @open-drawer="isOpen = true" />
       <!--      看点-->
       <look-point v-show="compName === 'look-point'" />
       <!--      动态-->
-      <dynamic v-show="compName === 'dynamic'" />
+      <dynamic v-show="compName === 'dynamic'" @open-drawer="isOpen = true" />
       <!--       底部tab栏-->
       <tab-bar @tab-change="tabChange" />
     </template>
   </drawer-layout>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, toRefs } from '@vue/composition-api'
+import { computed, defineComponent, reactive, ref, toRefs, watchEffect } from '@vue/composition-api'
 import DrawerLayout from '@/components/drawer-layout/index.vue'
 import TabBar from './components/tab-bar.vue'
 import Conversation from './components/conversation/index.vue'
 import Contact from './components/contact/index.vue'
 import LookPoint from './components/look-point/index.vue'
 import Dynamic from './components/dynamic/index.vue'
+import { useClientRect } from '@/hooks/useClientRect'
 
 export default defineComponent({
   name: 'Index',
@@ -40,7 +41,8 @@ export default defineComponent({
   setup(_, { root }) {
     const drawerLayoutRef = ref<any>(null)
 
-    const bodyHeight = computed(() => root.$store.getters.bodyHeight)
+    const tabBarRect = useClientRect('.tab-bar')
+    const topBarRect = useClientRect('.top-bar')
 
     const state = reactive({
       isOpen: false, // 是否打开抽屉
@@ -61,7 +63,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       drawerLayoutRef,
-      bodyHeight,
+      tabBarRect,
+      topBarRect,
       changeSlideEnable,
       tabChange,
     }

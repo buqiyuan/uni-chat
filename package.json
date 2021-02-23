@@ -31,6 +31,7 @@
     "@hyoga/uni-socket.io": "^1.0.1",
     "@vue/composition-api": "^1.0.0-rc.1",
     "@vue/shared": "^3.0.5",
+    "cnchar": "^3.0.1",
     "core-js": "^3.8.3",
     "dayjs": "^1.10.4",
     "file-saver": "^2.0.5",

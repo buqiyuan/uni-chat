@@ -3,7 +3,7 @@
     <top-bar>
       <template #left>
         <view class="user-info">
-          <image class="avatar" :src="apiUrl + currentUser.avatar" @click="$emit('open-drawer')" />
+          <image class="avatar" :src="apiUrl + currentUser.avatar" @tap="$emit('open-drawer')" />
           <view class="desc">
             <view class="nickname"> {{ currentUser.username }} </view>
             <view class="network-status">
