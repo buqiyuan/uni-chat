@@ -1,5 +1,5 @@
 <template>
-  <view class="chat-room">
+  <view class="chat-room" @tap="currentMsgId = ''">
     <top-bar>
       <template #left>
         <navigator open-type="navigateBack">
@@ -30,7 +30,14 @@
       <view v-if="isNoMore" class="no-more">都被你看光了，再翻也没有啦~</view>
       <image v-show="spinning" class="loading-icon" src="/static/status.gif"></image>
       <template v-for="msgItem in currentChatItem.messages">
+        <!-- 消息被撤回 -->
+        <view v-if="msgItem.isRevoke" :key="msgItem.userId + msgItem.time" class="message-item-revoke">
+          <text v-if="msgItem.userId === currentUser.userId"> 你撤回了一条消息 </text>
+          <text v-else> {{ msgItem.revokeUserName }}撤回了一条消息 </text>
+        </view>
+        <!-- 正常消息 -->
         <view
+          v-else
           :id="`msgItem-${msgItem._id}`"
           :key="msgItem._id"
           :class="{ 'my-self': isMe(msgItem) }"
@@ -41,9 +48,24 @@
             <view class="username">{{
               isMe(msgItem) ? currentUser.username : userGather[msgItem.userId].username
             }}</view>
-            <view class="bubble">
+            <view
+              class="bubble"
+              :class="{ active: currentMsgId == msgItem._id }"
+              @tap.stop
+              @longpress="currentMsgId = msgItem._id"
+            >
               <rich-text class="talk" :nodes="msgItem.content"></rich-text>
-              <!--              <view class="talk" v-html="msgItem.content"></view>-->
+              <view v-if="currentMsgId == msgItem._id" class="handle-msg-sheet">
+                <view class="handle-item" @tap="handleCommand('COPY', msgItem)">复制</view>
+                <view class="handle-item">转发</view>
+                <view v-if="isShowRevoke(msgItem)" class="handle-item" @tap="handleCommand('REVOKE', msgItem)"
+                  >撤回</view
+                >
+                <view class="handle-item">收藏</view>
+                <view class="handle-item">多选</view>
+                <view class="handle-item">回复</view>
+                <view class="handle-item">待办</view>
+              </view>
             </view>
           </view>
         </view>
@@ -74,6 +96,7 @@ import store from '@/store'
 import { useClientRect } from '@/hooks/useClientRect'
 import { useChatData } from '../index/components/conversation/useChatData'
 import { processReturn } from '@/utils/common'
+import { isH5 } from '@/utils/platform'
 
 interface IState extends Data {
   title: string
@@ -98,6 +121,7 @@ export default defineComponent({
       pageSize: 10,
       isNoMore: false,
       spinning: false,
+      currentMsgId: '', // 当前被操作的消息id
       isMounted: false, // 静态dom是否渲染完成,避免由等待聊天数据列表渲染而造成的短暂白屏
       currentChatId: id, // 当前聊天对象的id
       currentChatKey: chatType == 'group' ? 'groupId' : 'userId', // 当前聊天对象id的key名称
@@ -106,6 +130,7 @@ export default defineComponent({
     const tabBarRect = useClientRect('.top-bar')
     const chatInputRect = useClientRect('.chat-input')
 
+    const socket = computed((): SocketIOClient.Socket => store.getters['chat/socket'])
     const userGather = computed((): FriendGather => store.getters['chat/userGather'])
     // 群聊或用户的在线状态
     const onlineStatus = computed(() => {
@@ -230,6 +255,49 @@ export default defineComponent({
       })
     }
 
+    // 判断是否超过2分钟,超时不让撤回
+    const isShowRevoke = (message: FriendMessage & GroupMessage) => {
+      return message.userId === currentUser.value.userId && new Date().getTime() - message.time <= 1000 * 60 * 2
+    }
+
+    // 操作当前消息
+    const handleCommand = (type: ContextMenuType, message: FriendMessage & GroupMessage) => {
+      if (type === 'COPY') {
+        // 复制功能
+        if (isH5) {
+          const copy = (e: any) => {
+            e.preventDefault()
+            if (e.clipboardData) {
+              e.clipboardData.setData('text/plain', message.content)
+            } else if ((window as any).clipboardData) {
+              ;(window as any).clipboardData.setData('Text', message.content)
+            }
+            uni.showToast({ title: '已粘贴至剪切板' })
+          }
+          window.addEventListener('copy', copy)
+          document.execCommand('Copy')
+          window.removeEventListener('copy', copy)
+        } else {
+          uni.setClipboardData({
+            data: message.content,
+            success: function () {
+              uni.showToast({ title: '已粘贴至剪切板' })
+            },
+          })
+        }
+        // eslint-disable-next-line no-undef
+      } else if (type === 'REVOKE') {
+        // 消息撤回功能
+        socket.value.emit('revokeMessage', {
+          userId: currentUser.value.userId, // 当前用户Id
+          username: currentUser.value.username, // 当前用户名称
+          groupId: chatType == 'group' ? state.currentChatId : undefined, // 当前群组Id
+          friendId: chatType == 'friend' ? state.currentChatId : undefined, // 当前好友Id
+          _id: message._id, // 撤回的消息Id
+        })
+      }
+    }
+
     // 下滑快到顶部的时候，加载历史消息
     const scrolltoupper = () => {
       getMoreMessage()
@@ -247,6 +315,8 @@ export default defineComponent({
       onSendMessage,
       scroll2bottom,
       scrolltoupper,
+      handleCommand,
+      isShowRevoke,
     }
   },
 })
@@ -293,6 +363,12 @@ export default defineComponent({
       width: rpx(30);
       box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.1) inset;
     }
+    .message-item-revoke {
+      text-align: center;
+      color: #9d9d9d;
+      font-size: 14px;
+      margin: rpx(24) auto;
+    }
 
     .message-item {
       display: flex;
@@ -301,6 +377,7 @@ export default defineComponent({
         transform: rotateY(180deg);
         .avatar,
         .talk,
+        .handle-msg-sheet,
         .username {
           transform: rotateY(180deg);
         }
@@ -316,6 +393,17 @@ export default defineComponent({
           position: relative;
           background-color: white;
           border-radius: rpx(16);
+          &.active:before {
+            content: '';
+            position: absolute;
+            top: rpx(-40);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border: rpx(30) solid;
+            border-color: black transparent transparent;
+          }
           &:after {
             content: '';
             position: absolute;
@@ -334,6 +422,23 @@ export default defineComponent({
             display: block;
             padding: rpx(20);
             color: #333;
+            word-break: break-all;
+            white-space: break-spaces;
+          }
+          .handle-msg-sheet {
+            position: absolute;
+            top: rpx(-140);
+            width: 70vw;
+            display: grid;
+            text-align: center;
+            grid-template-columns: repeat(5, 1fr);
+            background-color: black;
+            color: white;
+            border-radius: rpx(16);
+            font-size: rpx(24);
+            .handle-item {
+              padding: rpx(14);
+            }
           }
         }
       }

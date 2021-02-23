@@ -2,7 +2,7 @@
   <view @tap="isShowMask = true">
     <view
       v-show="isShowMask"
-      v-if="isShowMask || (isShowed && currentUser.userId !== data.userId)"
+      v-if="chatType === 'group' && (isShowMask || (isShowed && currentUser.userId !== data.userId))"
       class="mask"
       :class="{ show: isShowMask }"
       @click="isShowCard = false"
@@ -44,6 +44,8 @@ export default defineComponent({
     },
   },
   setup(_, { root }) {
+    const { chatType } = root.$Route.query
+
     const isShowMask = ref(false)
     const isShowCard = ref(false)
     const isShowed = ref(false)
@@ -92,7 +94,18 @@ export default defineComponent({
       })
     }
 
-    return { isShowMask, isShowed, isShowCard, friendGather, userGather, apiUrl, currentUser, addFriend, nav2chat }
+    return {
+      isShowMask,
+      chatType,
+      isShowed,
+      isShowCard,
+      friendGather,
+      userGather,
+      apiUrl,
+      currentUser,
+      addFriend,
+      nav2chat,
+    }
   },
 })
 </script>
