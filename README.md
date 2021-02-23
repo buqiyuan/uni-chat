@@ -5,6 +5,10 @@ h5预览：http://buqiyuan.gitee.io/uni-chat/
 
 apk download: https://static-fa3f0f3d-b02a-4b84-9744-c7591c652c4d.bspapp.com/uni-chat.apk
 
+后台地址：https://github.com/buqiyuan/uni-chat-server
+
+### 本项目参考了 [genaller](https://github.com/genaller/genal-chat/issues) 和 [BoBoooooo](https://github.com/BoBoooooo/tyloo-chat) 两位大佬的项目
+
 ## Project setup
 ```
 yarn install
