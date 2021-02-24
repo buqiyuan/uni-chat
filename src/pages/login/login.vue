@@ -65,7 +65,7 @@ export default defineComponent({
         root.$Router.replace({
           name: 'index',
         })
-      })
+      }, 100)
     }
 
     // 用户登录

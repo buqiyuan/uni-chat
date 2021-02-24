@@ -4,6 +4,7 @@ export default {
   data() {
     return {
       lastEditRange: 0,
+      domParser: null,
     }
   },
   mounted() {
@@ -54,7 +55,7 @@ export default {
       selection.addRange(range)
       // 无论如何都要记录最后光标对象
       this.lastEditRange = selection.getRangeAt(0)
-      ownerVm?.callMethod('onBlur')
+      // ownerVm?.callMethod('onBlur')
     },
   },
 }

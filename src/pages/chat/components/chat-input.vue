@@ -15,7 +15,7 @@
         </editor>
         <button
           class="send-btn"
-          :class="{ 'send-enable': message.length > 11 }"
+          :class="{ 'send-enable': message.length > 7 && message !== '<p><br></p>' && message !== '<p></p>' }"
           type="primary"
           size="mini"
           @tap="preSendMessage"
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, toRefs, provide } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, provide, nextTick } from '@vue/composition-api'
 import ChatInputTools from '@/components/chat-input-tools/index.vue'
 import { useSendMessage } from './useSendMessage'
 import { isH5 } from '@/utils/platform'
@@ -83,7 +83,12 @@ export default defineComponent({
 
     // 输入文本
     const changeText = (e) => {
-      state.message = e.detail?.html || ''
+      const html = e.detail?.html
+      if (html?.includes('copy://') && html?.includes('end-copy')) {
+        const copyText = uni.getStorageSync('user-copy-data')?.replace(/(copy:\/\/<p>)(.*)(<\/p>end-copy)/g, '$2')
+        state.editorContext.setContents({ html: html.replace(/copy:\/\/.*end-copy/g, copyText) })
+      }
+      state.message = html?.replace(/(copy:\/\/)(.*)(end-copy)/g, '$2') || ''
       // state.message = inputBoxRef.value!.$el.innerHTML
     }
     function onEditorReady() {
@@ -112,7 +117,7 @@ export default defineComponent({
         success: async (res) => {
           const text = res.html
           // console.log(text, '将要发送的文本消息，这里用的是富文本')
-          if (text.trim().length < 8) {
+          if (text.trim() == '<p><br></p>' || text == '<p></p>') {
             console.log('不能发送空消息!')
             // uni.showToast('不能发送空消息!')
             return
@@ -173,6 +178,7 @@ export default a
     padding: rpx(12) rpx(18) 0;
     #input-box {
       //width: calc(100% - #{rpx(112)});
+      max-height: 50vh;
       min-height: unset;
       height: unset;
       padding: rpx(10) rpx(18);

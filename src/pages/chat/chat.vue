@@ -52,7 +52,7 @@
               class="bubble"
               :class="{ active: currentMsgId == msgItem._id }"
               @tap.stop
-              @longpress="currentMsgId = msgItem._id"
+              @longpress.prevent="currentMsgId = msgItem._id"
             >
               <rich-text class="talk" :nodes="msgItem.content"></rich-text>
               <view v-if="currentMsgId == msgItem._id" class="handle-msg-sheet">
@@ -263,14 +263,20 @@ export default defineComponent({
     // 操作当前消息
     const handleCommand = (type: ContextMenuType, message: FriendMessage & GroupMessage) => {
       if (type === 'COPY') {
+        // copy:// [*] end-copy 标识为复制消息
+        const messageCopy = `copy://${message.content}end-copy`
+        uni.setStorage({
+          key: 'user-copy-data',
+          data: messageCopy,
+        })
         // 复制功能
         if (isH5) {
           const copy = (e: any) => {
             e.preventDefault()
             if (e.clipboardData) {
-              e.clipboardData.setData('text/plain', message.content)
+              e.clipboardData.setData('text/plain', messageCopy)
             } else if ((window as any).clipboardData) {
-              ;(window as any).clipboardData.setData('Text', message.content)
+              ;(window as any).clipboardData.setData('Text', messageCopy)
             }
             uni.showToast({ title: '已粘贴至剪切板' })
           }
@@ -279,7 +285,7 @@ export default defineComponent({
           window.removeEventListener('copy', copy)
         } else {
           uni.setClipboardData({
-            data: message.content,
+            data: messageCopy,
             success: function () {
               uni.showToast({ title: '已粘贴至剪切板' })
             },
