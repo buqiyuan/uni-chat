@@ -19,7 +19,7 @@
           <uni-list-item :key="memberItem.userId" clickable>
             <!-- 自定义 header -->
             <view slot="header" class="slot-box">
-              <u-avatar :src="apiUrl + memberItem.avatar" :size="80"></u-avatar>
+              <image class="user-avatar" :lazy-load="true" :src="apiUrl + memberItem.avatar"></image>
               <view class="username">{{ memberItem.username }}</view>
             </view>
             <!-- 自定义 footer-->
@@ -137,6 +137,9 @@ export default defineComponent({
   align-items: center;
   .username {
     margin-left: rpx(14);
+  }
+  .user-avatar {
+    @include el-to-circle(80);
   }
 }
 .members ::v-deep {

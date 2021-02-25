@@ -1,26 +1,28 @@
 <template>
-  <view class="message-item" @tap="nav2chat">
-    <view class="group-avatar">
-      <template v-for="memberItem in messageItem.members.slice(0, 4)">
-        <image :key="memberItem.userId" class="avatar-item" :lazy-load="true" :src="apiUrl + memberItem.avatar" />
-      </template>
-    </view>
-    <view class="message-body">
-      <view class="message-head">
-        <view class="message-title">
-          {{ messageItem.groupName }}
-        </view>
-        <view v-if="lastMessage" class="message-time">
-          {{ formatTime(lastMessage.time) }}
-        </view>
+  <view>
+    <view class="message-item" @tap.stop="nav2chat">
+      <view class="group-avatar">
+        <template v-for="memberItem in messageItem.members.slice(0, 4)">
+          <image :key="memberItem.userId" class="avatar-item" :lazy-load="true" :src="apiUrl + memberItem.avatar" />
+        </template>
       </view>
-      <view v-if="lastMessage" class="message-footer">
-        <view class="new-message">
-          {{ lastMessage.username }}:
-          <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
+      <view class="message-body">
+        <view class="message-head">
+          <view class="message-title">
+            {{ messageItem.groupName }}
+          </view>
+          <view v-if="lastMessage" class="message-time">
+            {{ formatTime(lastMessage.time) }}
+          </view>
         </view>
-        <view v-if="messageItem.unread" class="message-unread">
-          {{ messageItem.unread }}
+        <view v-if="lastMessage" class="message-footer">
+          <view class="new-message">
+            {{ lastMessage.username }}:
+            <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
+          </view>
+          <view v-if="messageItem.unread" class="message-unread">
+            {{ messageItem.unread }}
+          </view>
         </view>
       </view>
     </view>
@@ -58,7 +60,6 @@ export default defineComponent({
     // const lastMessage = computed((): GroupMessage => props.messageItem.messages?.slice(-1)[0] as GroupMessage)
 
     const nav2chat = () => {
-      console.log('点击了群聊', root.$Router)
       root.$Router.push({
         name: 'chat',
         params: {

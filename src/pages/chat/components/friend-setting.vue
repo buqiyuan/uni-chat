@@ -1,5 +1,5 @@
 <template>
-  <!--    右侧群详情抽屉-->
+  <!--    右侧好友抽屉-->
   <u-popup v-model="isShowDrawer" mode="right" width="100%">
     <top-bar>
       <template #left>
@@ -9,7 +9,7 @@
       </template>
       <template #middle>
         <view class="chat-title">
-          <text class="title">群聊设置</text>
+          <text class="title">个人资料</text>
         </view>
       </template>
       <template #right>
@@ -19,7 +19,7 @@
       </template>
     </top-bar>
     <view class="user-card">
-      <u-avatar :src="chatData.avatar" mode="square" size="200"></u-avatar>
+      <u-avatar :src="apiUrl + chatData.avatar" mode="square" size="200"></u-avatar>
       <view class="username">{{ chatData.username }}</view>
     </view>
     <u-cell-group>
@@ -27,7 +27,11 @@
       <u-cell-item title="聊天背景"></u-cell-item>
     </u-cell-group>
     <view class="exit-btn">
-      <u-button type="error">删除好友</u-button>
+      <template v-if="friendGather[chatData.userId]">
+        <u-button type="success" @tap="nav2chat(chatData.userId)">发送消息</u-button>
+        <u-button type="error" style="margin-top: 12px" @tap="exitFriend(chatData.userId)">删除好友</u-button>
+      </template>
+      <u-button v-else type="primary" @tap="addFriend(chatData.userId)">添加好友</u-button>
     </view>
     <!-- 分享示例 -->
     <uni-popup id="popupShare" ref="popupShareRef" type="share" @change="change">
@@ -59,7 +63,7 @@ export default defineComponent({
     },
   },
   emits: ['changeModel'],
-  setup(props, { emit }) {
+  setup(props, { emit, root }) {
     const popupShareRef = ref<any>()
     const state = reactive({
       isShowDrawer: props.isShow, // 是否显示群详情
@@ -67,6 +71,9 @@ export default defineComponent({
     })
     // 服务器地址
     const apiUrl = computed((): string => store.getters['app/apiUrl'])
+    const friendGather = computed((): FriendGather => store.getters['chat/friendGather'])
+    const currentUser = computed((): User => store.getters['app/user'])
+    const socket = computed((): SocketIOClient.Socket => store.getters['chat/socket'])
 
     // TODO H5可以，APP端监听不到，可恶啊
     // const isShowDrawer = computed({
@@ -83,6 +90,32 @@ export default defineComponent({
       () => state.isShowDrawer,
       (value) => emit('changeModel', value)
     )
+    // 添加好友
+    const addFriend = (friendId: string) => {
+      // 设置按钮loading,避免网络延迟重复点击造成多次执行
+      socket.value.emit('addFriend', {
+        userId: currentUser.value.userId,
+        friendId,
+        createTime: new Date().valueOf(),
+      })
+    }
+    // 好友私聊
+    const nav2chat = (userId: string) => {
+      root.$Router.replace({
+        name: 'chat',
+        params: {
+          id: userId,
+          chatType: 'friend',
+        },
+      })
+    }
+    // 删除好友
+    const exitFriend = (userId: string) => {
+      socket.value.emit('exitFriend', {
+        userId: currentUser.value.userId,
+        friendId: userId,
+      })
+    }
     // 分享
     const confirmShare = () => {
       popupShareRef.value.open()
@@ -104,6 +137,10 @@ export default defineComponent({
       ...toRefs(state),
       popupShareRef,
       apiUrl,
+      friendGather,
+      exitFriend,
+      addFriend,
+      nav2chat,
       confirmShare,
       change,
       select,

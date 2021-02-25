@@ -42,7 +42,7 @@
       <u-cell-item title="群公告" :value="change.notice"></u-cell-item>
     </u-cell-group>
     <view class="exit-btn">
-      <u-button type="error">退出群聊</u-button>
+      <u-button @click="exitGroup" type="error">退出群聊</u-button>
     </view>
     <!-- 分享示例 -->
     <uni-popup id="popupShare" ref="popupShareRef" type="share" @change="change">
@@ -86,6 +86,8 @@ export default defineComponent({
     })
     // 服务器地址
     const apiUrl = computed((): string => store.getters['app/apiUrl'])
+    const socket = computed((): SocketIOClient.Socket => store.getters['chat/socket'])
+    const currentUser = computed((): User => store.getters['app/user'])
 
     // TODO H5可以，APP端监听不到，可恶啊
     // const isShowDrawer = computed({
@@ -119,6 +121,17 @@ export default defineComponent({
       })
       done()
     }
+    // 退出群聊
+    const exitGroup = () => {
+      socket.value.emit('exitGroup', {
+        userId: currentUser.value.userId,
+        groupId: props.chatData.groupId,
+      })
+      // 退群后关闭Panel
+      setTimeout(() => {
+        emit('changeModel', false)
+      }, 300)
+    }
 
     const change = (e: any) => {
       console.log('popup ' + e.type + ' 状态', e.show)
@@ -132,6 +145,7 @@ export default defineComponent({
       confirmShare,
       change,
       select,
+      exitGroup,
     }
   },
 })

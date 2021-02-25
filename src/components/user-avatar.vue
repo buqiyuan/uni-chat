@@ -1,29 +1,31 @@
 <template>
-  <view @tap="isShowMask = true">
-    <view
-      v-show="isShowMask"
-      v-if="chatType === 'group' && (isShowMask || (isShowed && currentUser.userId !== data.userId))"
-      class="mask"
-      :class="{ show: isShowMask }"
-      @click="isShowCard = false"
-    >
-      <view class="user-card" :class="{ show: isShowCard }" @tap.stop>
-        <image
-          class="user-avatar"
-          :class="{ offline: data.online == 0 }"
-          :src="apiUrl + userGather[data.userId].avatar"
-        ></image>
-        <view class="username">{{ userGather[data.userId].username }}</view>
-        <view v-if="friendGather[data.userId]" class="add-friend-btn" @tap="nav2chat(data.userId)">发送消息</view>
-        <view v-else class="add-friend-btn" @tap="addFriend(data.userId)">添加好友</view>
+  <view>
+    <view @tap="isShowMask = true">
+      <view
+        v-show="isShowMask"
+        v-if="chatType === 'group' && (isShowMask || (isShowed && currentUser.userId !== data.userId))"
+        class="mask"
+        :class="{ show: isShowMask }"
+        @click="isShowCard = false"
+      >
+        <view class="user-card" :class="{ show: isShowCard }" @tap.stop>
+          <image
+            class="user-avatar"
+            :class="{ offline: data.online == 0 }"
+            :src="apiUrl + userGather[data.userId].avatar"
+          ></image>
+          <view class="username">{{ userGather[data.userId].username }}</view>
+          <view v-if="friendGather[data.userId]" class="add-friend-btn" @tap="nav2chat(data.userId)">发送消息</view>
+          <view v-else class="add-friend-btn" @tap="addFriend(data.userId)">添加好友</view>
+        </view>
       </view>
+      <image
+        class="user-avatar"
+        :class="{ offline: data.online == 0 }"
+        :src="apiUrl + (currentUser.userId === data.userId ? currentUser.avatar : userGather[data.userId].avatar)"
+        @tap="isShowMask = true"
+      ></image>
     </view>
-    <image
-      class="user-avatar"
-      :class="{ offline: data.online == 0 }"
-      :src="apiUrl + (currentUser.userId === data.userId ? currentUser.avatar : userGather[data.userId].avatar)"
-      @tap="isShowMask = true"
-    ></image>
   </view>
 </template>
 

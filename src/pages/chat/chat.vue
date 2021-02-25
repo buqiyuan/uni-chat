@@ -12,7 +12,7 @@
         </view>
       </template>
       <template #right>
-        <view class="tools" @tap="isShowDrawer = !isShowDrawer">
+        <view class="tools" @tap="openDrawer">
           <icon-font icon="icon-caidan" />
         </view>
       </template>
@@ -43,7 +43,14 @@
           :class="{ 'my-self': isMe(msgItem) }"
           class="message-item"
         >
-          <user-avatar :data="msgItem" class="avatar" />
+          <u-avatar
+            :src="apiUrl + userGather[msgItem.userId].avatar"
+            class="avatar"
+            mode="circle"
+            size="80"
+            @click="previewUser(msgItem)"
+          ></u-avatar>
+          <!--          <user-avatar :data="msgItem" class="avatar" />-->
           <view class="message-body">
             <view class="username">{{
               isMe(msgItem) ? currentUser.username : userGather[msgItem.userId].username
@@ -72,8 +79,10 @@
       </template>
     </scroll-view>
     <!--    右侧详情抽屉-->
-    <group-setting v-if="chatType === 'group'" v-model="isShowDrawer" :chat-data="currentChatItem" />
-    <friend-setting v-else v-model="isShowDrawer" :chat-data="currentChatItem" />
+    <!--    群详情-->
+    <group-setting v-if="chatType === 'group'" v-model="isShowGroupDrawer" :chat-data="currentChatItem" />
+    <!--    好友详情或群成员详情-->
+    <friend-setting v-model="isShowUserDrawer" :chat-data="userInfo" />
     <!--    聊天输入框-->
     <chat-input @send-message="onSendMessage" />
   </view>
@@ -93,7 +102,6 @@ import {
 } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
 import ChatInput from './components/chat-input.vue'
-import UserAvatar from '@/components/user-avatar.vue'
 import * as api from '@/apis'
 import store from '@/store'
 import { useClientRect } from '@/hooks/useClientRect'
@@ -102,12 +110,16 @@ import { processReturn } from '@/utils/common'
 import { isH5 } from '@/utils/platform'
 import GroupSetting from './components/group-setting.vue'
 import FriendSetting from './components/friend-setting.vue'
+import { apiUrl } from '@/common/constant'
 
 interface IState extends Data {
   title: string
   msgId: string
   pageSize: number
+  isShowGroupDrawer: boolean // 是否显示群详情
+  isShowUserDrawer: boolean // 是否显示好友详情
   isNoMore: boolean
+  userInfo: Friend // 用户详情
   spinning: boolean // 加载历史消息loading
   isMounted: boolean // 静态dom是否渲染完成,避免由等待聊天数据列表渲染而造成的短暂白屏
   currentChatId: string // 当前聊天对象的id
@@ -116,7 +128,7 @@ interface IState extends Data {
 
 export default defineComponent({
   name: 'Chat',
-  components: { TopBar, ChatInput, UserAvatar, GroupSetting, FriendSetting },
+  components: { TopBar, ChatInput, GroupSetting, FriendSetting },
   setup(_, { root }: SetupContext) {
     const { id, chatType } = root.$Route.query
     console.log(root.$Route.query, 'ctx.root.$Route.query')
@@ -124,8 +136,10 @@ export default defineComponent({
       title: '',
       msgId: '',
       pageSize: 10,
-      isShowDrawer: false, // 是否显示右侧群详情
+      isShowGroupDrawer: false, // 是否显示右侧群详情
+      isShowUserDrawer: false, // 是否显示右侧群详情
       isNoMore: false,
+      userInfo: {} as Friend, // 用户详情
       spinning: false,
       currentMsgId: '', // 当前被操作的消息id
       isMounted: false, // 静态dom是否渲染完成,避免由等待聊天数据列表渲染而造成的短暂白屏
@@ -151,7 +165,7 @@ export default defineComponent({
 
     const { groupGather, friendGather, currentUser } = useChatData()
 
-    // 当前聊天对象
+    // 当前聊天对象, 群 || 好友
     const currentChatItem = computed((): Friend | Group | any => {
       const currentChatKey = state.currentChatKey
       if (currentChatKey === 'groupId') {
@@ -310,6 +324,23 @@ export default defineComponent({
       }
     }
 
+    // 打开群详情或好友详情抽屉
+    const openDrawer = () => {
+      if (chatType == 'group') {
+        state.isShowGroupDrawer = true
+      } else {
+        state.userInfo = currentChatItem.value
+        state.isShowUserDrawer = true
+      }
+    }
+
+    // 点击好友头像，查看好友资料
+    const previewUser = (msgItem: FriendMessage) => {
+      console.log(msgItem, 'msgitem')
+      state.userInfo = userGather.value[msgItem.userId]
+      state.isShowUserDrawer = true
+    }
+
     // 下滑快到顶部的时候，加载历史消息
     const scrolltoupper = () => {
       getMoreMessage()
@@ -317,6 +348,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      apiUrl,
       chatType,
       currentUser,
       currentChatItem,
@@ -325,6 +357,8 @@ export default defineComponent({
       isMe,
       userGather,
       onlineStatus,
+      openDrawer,
+      previewUser,
       onSendMessage,
       scroll2bottom,
       scrolltoupper,
@@ -361,7 +395,6 @@ export default defineComponent({
     //content-visibility: auto;
     overflow-anchor: none;
     height: calc(100vh - var(--message-scroll-height));
-    transform: translate3d(0, 0, 0);
     .no-more {
       text-align: center;
       line-height: rpx(100);

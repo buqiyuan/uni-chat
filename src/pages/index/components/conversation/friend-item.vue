@@ -1,21 +1,23 @@
 <template>
-  <view class="message-item" @tap="nav2chat">
-    <user-avatar class="message-logo" :data="messageItem" />
-    <view class="message-body">
-      <view class="message-head">
-        <view class="message-title">
-          {{ messageItem.username }}
+  <view>
+    <view class="message-item" @tap="nav2chat">
+      <user-avatar class="message-logo" :data="messageItem" />
+      <view class="message-body">
+        <view class="message-head">
+          <view class="message-title">
+            {{ messageItem.username }}
+          </view>
+          <view v-if="lastMessage" class="message-time">
+            {{ formatTime(lastMessage.time) }}
+          </view>
         </view>
-        <view v-if="lastMessage" class="message-time">
-          {{ formatTime(lastMessage.time) }}
-        </view>
-      </view>
-      <view v-if="lastMessage" class="message-footer">
-        <view class="new-message">
-          <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
-        </view>
-        <view v-if="messageItem.unread" class="message-unread">
-          {{ messageItem.unread }}
+        <view v-if="lastMessage" class="message-footer">
+          <view class="new-message">
+            <rich-text class="message-content" :nodes="lastMessage.content"></rich-text>
+          </view>
+          <view v-if="messageItem.unread" class="message-unread">
+            {{ messageItem.unread }}
+          </view>
         </view>
       </view>
     </view>
@@ -51,7 +53,6 @@ export default defineComponent({
     // const lastMessage = computed((): FriendMessage => props.messageItem?.messages?.slice(-1)[0] as FriendMessage)
 
     const nav2chat = () => {
-      console.log('点击了好友', root.$Router)
       root.$Router.push({
         name: 'chat',
         params: {
