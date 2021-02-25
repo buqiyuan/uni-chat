@@ -47,10 +47,11 @@ export default defineComponent({
     watchEffect(() => {
       lastMessage.value = props.messageItem.messages?.slice(-1)[0]
     })
-    //TODO 最新的一条消息（APP端检测不到值的变化。。。）
+    // TODO 最新的一条消息（APP端检测不到值的变化。。。）
     // const lastMessage = computed((): FriendMessage => props.messageItem?.messages?.slice(-1)[0] as FriendMessage)
 
     const nav2chat = () => {
+      console.log('点击了好友', root.$Router)
       root.$Router.push({
         name: 'chat',
         params: {

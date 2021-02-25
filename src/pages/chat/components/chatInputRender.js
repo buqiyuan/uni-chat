@@ -4,7 +4,6 @@ export default {
   data() {
     return {
       lastEditRange: 0,
-      domParser: null,
     }
   },
   mounted() {

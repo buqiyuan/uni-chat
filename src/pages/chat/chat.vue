@@ -12,7 +12,7 @@
         </view>
       </template>
       <template #right>
-        <view class="tools">
+        <view class="tools" @tap="isShowDrawer = !isShowDrawer">
           <icon-font icon="icon-caidan" />
         </view>
       </template>
@@ -71,6 +71,9 @@
         </view>
       </template>
     </scroll-view>
+    <!--    右侧详情抽屉-->
+    <group-setting v-if="chatType === 'group'" v-model="isShowDrawer" :chat-data="currentChatItem" />
+    <friend-setting v-else v-model="isShowDrawer" :chat-data="currentChatItem" />
     <!--    聊天输入框-->
     <chat-input @send-message="onSendMessage" />
   </view>
@@ -97,6 +100,8 @@ import { useClientRect } from '@/hooks/useClientRect'
 import { useChatData } from '../index/components/conversation/useChatData'
 import { processReturn } from '@/utils/common'
 import { isH5 } from '@/utils/platform'
+import GroupSetting from './components/group-setting.vue'
+import FriendSetting from './components/friend-setting.vue'
 
 interface IState extends Data {
   title: string
@@ -111,7 +116,7 @@ interface IState extends Data {
 
 export default defineComponent({
   name: 'Chat',
-  components: { TopBar, ChatInput, UserAvatar },
+  components: { TopBar, ChatInput, UserAvatar, GroupSetting, FriendSetting },
   setup(_, { root }: SetupContext) {
     const { id, chatType } = root.$Route.query
     console.log(root.$Route.query, 'ctx.root.$Route.query')
@@ -119,6 +124,7 @@ export default defineComponent({
       title: '',
       msgId: '',
       pageSize: 10,
+      isShowDrawer: false, // 是否显示右侧群详情
       isNoMore: false,
       spinning: false,
       currentMsgId: '', // 当前被操作的消息id
@@ -311,6 +317,7 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      chatType,
       currentUser,
       currentChatItem,
       tabBarRect,
@@ -354,6 +361,7 @@ export default defineComponent({
     //content-visibility: auto;
     overflow-anchor: none;
     height: calc(100vh - var(--message-scroll-height));
+    transform: translate3d(0, 0, 0);
     .no-more {
       text-align: center;
       line-height: rpx(100);

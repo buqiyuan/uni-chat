@@ -83,12 +83,13 @@ export default defineComponent({
 
     // 输入文本
     const changeText = (e) => {
-      const html = e.detail?.html
+      let html = e.detail?.html
       if (html?.includes('copy://') && html?.includes('end-copy')) {
         const copyText = uni.getStorageSync('user-copy-data')?.replace(/(copy:\/\/<p>)(.*)(<\/p>end-copy)/g, '$2')
-        state.editorContext.setContents({ html: html.replace(/copy:\/\/.*end-copy/g, copyText) })
+        html = html.replace(/copy:\/\/.*end-copy/g, copyText)
+        state.editorContext.setContents({ html })
       }
-      state.message = html?.replace(/(copy:\/\/)(.*)(end-copy)/g, '$2') || ''
+      state.message = html || ''
       // state.message = inputBoxRef.value!.$el.innerHTML
     }
     function onEditorReady() {
@@ -99,7 +100,6 @@ export default defineComponent({
         .context((res) => {
           state.editorContext = res.context
           state.editorContext.setContents({ html: state.message })
-          console.log(res, 'shen')
         })
         .exec()
       // #endif
@@ -118,7 +118,7 @@ export default defineComponent({
           const text = res.html
           // console.log(text, '将要发送的文本消息，这里用的是富文本')
           if (text.trim() == '<p><br></p>' || text == '<p></p>') {
-            console.log('不能发送空消息!')
+            console.log(text, '不能发送空消息!')
             // uni.showToast('不能发送空消息!')
             return
           }

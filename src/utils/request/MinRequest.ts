@@ -1,5 +1,5 @@
 import { RequestOptions, RequestConfig, ResponseResult } from './types'
-import { EPlatform } from '@/utils/platform'
+import { isAppPlus } from '@/utils/platform'
 const config = Symbol('config')
 const isCompleteURL = Symbol('isCompleteURL')
 const requestBefore = Symbol('requestBefore')
@@ -85,7 +85,7 @@ class MinRequest {
       options.fail = function (err) {
         reject(MinRequest[requestAfter](err))
       }
-      if (EPlatform.AppPlus && options.method == 'PATCH') {
+      if (isAppPlus && options.method == 'PATCH') {
         // @ts-ignore
         const xhr = new plus.net.XMLHttpRequest()
         xhr.onload = function (e: any) {

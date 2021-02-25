@@ -15,8 +15,10 @@ module.exports = {
         javascriptEnabled: true,
       },
       scss: {
-        additionalData: `@import "~@/styles/func.scss";
-                  @import "~@/styles/vars.scss";`,
+        additionalData: `
+          @import "~@/uni.scss";
+          @import "~@/styles/func.scss";
+          @import "~@/styles/vars.scss";`,
       },
     },
   },

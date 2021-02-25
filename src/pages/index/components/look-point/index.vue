@@ -16,16 +16,20 @@
         </view>
       </template>
     </top-bar>
+    <view>
+      <scroll-snap />
+    </view>
   </view>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import TopBar from '@/components/top-bar/index.vue'
+import ScrollSnap from '@/components/scroll-snap.vue'
 
 export default defineComponent({
   name: 'Contact',
-  components: { TopBar },
+  components: { TopBar, ScrollSnap },
   setup() {
     const tabs = [
       {

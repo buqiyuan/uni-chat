@@ -1,0 +1,10 @@
+/dist/*
+.local
+.output.js
+/node_modules/**
+/src/uni_modules/**
+/src/components/uni-*/**
+**/*.svg
+**/*.sh
+
+/public/*

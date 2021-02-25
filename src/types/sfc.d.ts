@@ -9,3 +9,8 @@ declare module 'uview-ui' {
   import uviewUi from 'uview-ui'
   export default uviewUi
 }
+
+declare module '@dcloudio/uni-ui' {
+  import uniUi from '@dcloudio/uni-ui'
+  export default uniUi
+}

@@ -54,10 +54,11 @@ export default defineComponent({
 
     // 服务器地址
     const apiUrl = computed((): string => store.getters['app/apiUrl'])
-    //TODO 最新的一条消息（APP端检测不到值的变化。。。）
+    // TODO 最新的一条消息（APP端检测不到值的变化。。。）
     // const lastMessage = computed((): GroupMessage => props.messageItem.messages?.slice(-1)[0] as GroupMessage)
 
     const nav2chat = () => {
+      console.log('点击了群聊', root.$Router)
       root.$Router.push({
         name: 'chat',
         params: {

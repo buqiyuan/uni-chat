@@ -24,7 +24,6 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs, watch, inject, PropType } from '@vue/composition-api'
 import { IProps, EmojiItem } from './types'
-import { log } from 'util'
 
 export default defineComponent({
   name: 'EmojiItem',
@@ -70,7 +69,7 @@ export default defineComponent({
     }
 
     // 长按图标
-    const longPress = (item: any) => {
+    const longPress = (item: EmojiItem) => {
       state.previewEmoji = item.active
     }
 

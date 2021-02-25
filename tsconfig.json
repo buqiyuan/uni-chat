@@ -40,6 +40,8 @@
   ],
   "exclude": [
     "node_modules",
+    "src/uni_modules",
+    "src/components/uni-*/**",
     "unpackage",
     "src/**/*.nvue"
   ]

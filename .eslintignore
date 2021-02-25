@@ -1,0 +1,17 @@
+
+*.sh
+node_modules
+src/uni_modules
+src/components/uni-*/**
+*.md
+*.woff
+*.ttf
+.vscode
+.idea
+dist
+/public
+/docs
+.husky
+.local
+/bin
+Dockerfile
