@@ -4,12 +4,13 @@ import { SET_KEYBOARD_HEIGHT } from '@/store/modules/app/mutation-types'
 
 export default Vue.extend({
   mpType: 'app',
-  onLaunch() {
+  onShow() {
     // console.log(process.env)
     setTimeout(async () => {
       const userId = this.$store.getters['app/user'].userId
+      const socket = this.$store.getters['chat/socket']
       console.log(userId, 'userId')
-      if (userId) {
+      if (userId && !socket) {
         await this.$store.dispatch('chat/connectSocket')
         console.log(this.$Route?.name, 'this.$Route?.name')
         if (this.$Route?.name == 'login') {
@@ -25,9 +26,6 @@ export default Vue.extend({
       }
       console.log(this.$store.state.app.keyboardHeight)
     })
-  },
-  onBackPress() {
-    console.log('点击了返回键')
   },
 })
 </script>

@@ -27,6 +27,9 @@
               <u-button v-if="friendGather[memberItem.userId]" type="success" size="mini" @tap="nav2friend(memberItem)"
                 >发消息</u-button
               >
+              <template v-else-if="memberItem.userId === currentUser.userId">
+                <u-button size="mini">自己</u-button>
+              </template>
               <u-button v-else type="primary" size="mini" @tap="addFriend(memberItem)">加好友</u-button>
             </view>
           </uni-list-item>
@@ -121,6 +124,7 @@ export default defineComponent({
       ...toRefs(state),
       nav2friend,
       addFriend,
+      currentUser,
       friendGather,
       tabBarRect,
       groupUsers,
