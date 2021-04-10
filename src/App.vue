@@ -4,7 +4,7 @@ import { SET_KEYBOARD_HEIGHT } from '@/store/modules/app/mutation-types'
 
 export default Vue.extend({
   mpType: 'app',
-  onShow() {
+  onLoad() {
     // console.log(process.env)
     setTimeout(async () => {
       const userId = this.$store.getters['app/user'].userId
